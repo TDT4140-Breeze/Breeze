@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Breeze</h1>
-  <p class="deck">
-      Press the button to go to a random chatroom. Eventually we will have
-      a field input thing here, but for now it's just a button.
-  </p>
-  <p>
-      <a class="button button-primary" href="{% url 'new_room' %}">
-          Create new chat room
-      </a>
-  </p>
-  <p class="quiet">
-      On this page we also need a button for lecturers and a
-      general login button.
-  </p>
+<h1>Breeze</h1>
+<p class="deck">
+    Press the button to go to a random chatroom. Eventually we will have
+    a field input thing here, but for now it's just a button.
+</p>
+<p>
+    <a class="button button-primary" href="{% url 'new_room' %}">
+        Create new chat room
+    </a>
+</p>
+<p class="quiet">
+    On this page we also need a button for lecturers and a
+    general login button.
+</p>
 {% endblock content %}

@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Django Channels Example</h1>
+  <h1>Breeze</h1>
   <p class="deck">
-    This is a demo using <a href="http://channels.readthedocs.org/en/latest/">
-    Django Channels</a> to implement a simple WebSocket-based chat server.
-    You can see the <a href="https://github.com/jacobian/channels-example">
-    code on GitHub</a>, or try the app:
+      Press the button to go to a random chatroom. Eventually we will have
+      a field input thing here, but for now it's just a button.
   </p>
   <p>
-    <a class="button button-primary" href="{% url 'new_room' %}">Create new chat room</a>
+      <a class="button button-primary" href="{% url 'new_room' %}">
+          Create new chat room
+      </a>
   </p>
   <p class="quiet">
-    Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code> 
-    to create a arbitrary room or join one whose name you know.
+      On this page we also need a button for lecturers and a
+      general login button.
   </p>
 {% endblock content %}

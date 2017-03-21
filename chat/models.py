@@ -3,6 +3,10 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
+class login(models.Model):
+    user_email = models.EmailField()
+    user_password = models.PasswordInput()
+
 class Room(models.Model):
     name = models.TextField()
     label = models.SlugField(unique=True)

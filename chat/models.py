@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class login(models.Model):
     user_email = models.EmailField()
-    user_password = models.PasswordInput()
+    user_password = models.CharField(max_length=200)
 
 class Room(models.Model):
     name = models.TextField()

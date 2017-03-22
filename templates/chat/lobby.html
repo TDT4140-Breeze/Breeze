@@ -1,6 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Lobby</h1>
+    <h1>Lobby</h1>
 
+    <ul id="lobbybar">
+        <li><p id="lobbyHeader">People connected: {{ student_count }}</p></li>
+        <li><p id="lobbyHeader">Code: {{ code }}</p></li>
+        <li><p id="lobbyHeader">Topic: {{topic}}</p></li>
+    </ul>
+
+    <table>
+    <tr>
+        <th>Name</th>
+        <th>People connected</th>
+        <th></th>
+    </tr>
+    <tr>
+        <td>Room#1</td>
+        <td>5</td>
+        <td><button>Join</button></td>
+    </tr>
+        <tr>
+            <td>Room#2</td>
+            <td>4</td>
+            <td><button>Join</button></td>
+
+        </tr>
+    </table>
+    <button id="startLobby">Start</button>
 {% endblock content %}

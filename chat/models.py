@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-class login(models.Model):
+class Login(models.Model):
     user_email = models.EmailField()
     user_password = models.CharField(max_length=200)
 

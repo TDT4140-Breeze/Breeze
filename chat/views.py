@@ -5,6 +5,7 @@ from django.db import transaction
 from django.shortcuts import render, redirect
 import haikunator
 from .models import Room
+from .models import Login
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import LoginForm
@@ -13,15 +14,25 @@ from .forms import LoginForm
 def about(request):
     return render(request, "chat/about.html")
 
+
+def lobby(request):
+    return render(request, "chat/lobby.html")
+
+
 def login(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = LoginForm(request.POST)
         # check whether it's valid:
-        if form.is_valid() and form.user_password != form.password_retype:
-            user_email = form.cleaned_data['user_email']
-            user_password = form.cleaned_data['user_password']
+        if form.is_valid() and form.user_password == form.password_retype:
+            #new_login = form.save(commit=False)
+            #l = Login.objects.get()
+            #print(l)
+            #form = LoginForm(request.POST)
+            #form.save()
+            #user_email = form.cleaned_data['user_email']
+            #user_password = form.cleaned_data['user_password']
             # redirect to a new URL:
             return HttpResponseRedirect('/lobby/')
 

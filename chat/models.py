@@ -3,25 +3,47 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 
-class login(models.Model):
-    user_email = models.EmailField()
-    user_password = models.CharField(max_length=200)
+
+
+class User(models.Model):
+    user_email = models.EmailField(unique=True, primary_key=True)
+    user_password = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return self.email
+
+class Connected_user(models.Model):
+    lobby = models.SlugField()
+    user = models.EmailField()
+
+class Lobby(models.Model):
+    owner = models.ForeignKey(User, related_name='owner', null=True)
+    label = models.SlugField(unique=True, primary_key=True)
+    topic = models.TextField()
+    connected_users = models.IntegerField(default=0)
+
+class Connected_user_room(models.Model):
+    room = models.SlugField()
+    user = models.EmailField()
+
 
 class Room(models.Model):
     name = models.TextField()
     label = models.SlugField(unique=True)
+    lobby = models.ForeignKey(Lobby, related_name='rooms', null=True)
+
 
     def __unicode__(self):
         return self.label
 
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages')
-    handle = models.TextField()
-    message = models.TextField()
-    timestamp = models.DateTimeField(default=timezone.now, db_index=True)
+    handle = models.SlugField()
+    message = models.TextField(max_length=140)
+    timestamp = models.TimeField(default=timezone.now, db_index=True)
 
-    def __unicode__(self):
-        return '[{timestamp}] {handle}: {message}'.format(**self.as_dict())
+    def __str__(self):
+        return str(self.timestamp[0:8]) + " " + str(self.handle) + ": " + str(self.message)
 
     @property
     def formatted_timestamp(self):

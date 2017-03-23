@@ -6,6 +6,11 @@
 <p class="quiet">
     Anyone with this URL can join the room and chat:
     <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code>
+
+    <br/>
+
+    This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected
+
 </p>
 
 <p>

@@ -1,10 +1,10 @@
 from django import forms
-from chat.models import login
+from chat.models import Login
 
 class LoginForm(forms.Form):
     class Meta:
         widgets = {'password': forms.PasswordInput()}
-        model = login
+        model = Login
 
     user_email = forms.EmailField()
     user_password = forms.PasswordInput()

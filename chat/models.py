@@ -5,6 +5,7 @@ from django.utils import timezone
 
 
 
+
 class User(models.Model):
     user_email = models.EmailField(unique=True, primary_key=True)
     user_password = models.CharField(max_length=200, blank=True)
@@ -25,6 +26,11 @@ class Lobby(models.Model):
 class Connected_user_room(models.Model):
     room = models.SlugField()
     user = models.EmailField()
+
+
+class Login(models.Model):
+    user_email = models.EmailField()
+    user_password = models.CharField(max_length=200)
 
 
 class Room(models.Model):

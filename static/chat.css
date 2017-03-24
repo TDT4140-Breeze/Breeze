@@ -15,3 +15,33 @@ p.deck a {
     font-size: 90%;
     color: #999;
 }
+
+#topic {
+    display: inline;
+}
+
+#code {
+    display: inline;
+}
+
+h2 {
+    font-size: 25px;
+    display: inline;
+}
+
+#lobbyTableHeader {
+    font-size: 20px;
+}
+
+#lobbybar li {
+    display: inline;
+    float: right;
+    padding-right: 100px;
+    font-size: 20px;
+}
+
+#startLobby {
+    position: relative;
+    float: left;
+}
+

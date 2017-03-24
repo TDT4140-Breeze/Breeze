@@ -7,8 +7,9 @@ import haikunator
 from django.core.cache import cache
 import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User
+
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .forms import LoginForm
 import logging
 
@@ -18,15 +19,25 @@ log = logging.getLogger(__name__)
 def about(request):
     return render(request, "chat/about.html")
 
+
+def lobby(request):
+    return render(request, "chat/lobby.html")
+
+
 def login(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = LoginForm(request.POST)
         # check whether it's valid:
-        if form.is_valid() and form.user_password != form.password_retype:
-            user_email = form.cleaned_data['user_email']
-            user_password = form.cleaned_data['user_password']
+        if form.is_valid() and form.user_password == form.password_retype:
+            #new_login = form.save(commit=False)
+            #l = Login.objects.get()
+            #print(l)
+            #form = LoginForm(request.POST)
+            #form.save()
+            #user_email = form.cleaned_data['user_email']
+            #user_password = form.cleaned_data['user_password']
             # redirect to a new URL:
             return HttpResponseRedirect('/lobby/')
 

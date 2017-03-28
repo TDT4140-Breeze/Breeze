@@ -45,3 +45,28 @@ h2 {
     float: left;
 }
 
+#startLobby {
+    display: block;
+}
+
+#return_home {
+    margin: 10px;
+
+}
+
+#save {
+    display: inline;
+    margin: 10px;
+    color: #0FA0CE;
+}
+
+.button-primary #home_button {
+    display: inline;
+    margin: 10px;
+    padding:10px 20px;
+}
+
+#post_header {
+    font-size: 35px;
+    font-weight: 600;
+}

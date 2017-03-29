@@ -1,5 +1,4 @@
 import random
-import string
 from django.template import RequestContext
 from django.db import transaction
 from django.shortcuts import render, redirect
@@ -29,9 +28,12 @@ def saveLobby(request):
         cache.set('lobbydirect', True)
     return render(request, "chat/login.html")
 
-
 def lobby(request):
     return render(request, "chat/lobby.html")
+
+
+def post_chat(request):
+    return render(request, "chat/post_chat.html")
 
 
 def login(request):
@@ -59,9 +61,11 @@ def login(request):
         return render(request, "chat/login.html")
     return redirect(open_lobby, label=cache.get('lobbylabel'))
 
+    return render(request, 'chat/login.html', RequestContext(request))
+
+
 def new_lobby(request):
     a = User.objects.get(email=cache.get('loggedIn'))
-    #TODO: fix with login
 
     new_lobby = None
     while not new_lobby:
@@ -132,6 +136,7 @@ def create_rooms(request):
     place_rooms(request)
     return HttpResponse(None)
 
+
 def place_rooms(request):
     """
     In coalition with the above method, places chat users into randomized rooms.
@@ -143,7 +148,7 @@ def place_rooms(request):
     random.shuffle(userlist)
     roomList = list(Room.objects.values_list('label', flat=True).filter(lobby=active_lobby))
     for n in roomList:
-        for x in range(0,5):
+        for x in range(0, 5):
             if len(userlist) > 0:
                 c_u_r = Connected_user_room.objects.create(room=n, user=userlist.pop())
                 c_u_r.save()

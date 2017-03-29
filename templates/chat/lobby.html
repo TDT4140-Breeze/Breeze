@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-xx
 {% load staticfiles %}
 <h1>{{ lobby.label }}</h1>
 <p class="quiet">
@@ -10,54 +9,21 @@ xx
     <code>{{ lobby.connected_users  }}</code>
 </p>
 
-
-<p>
-
-</p>
-
 <p>
     <a class="button button-primary" href="{% url 'new_room' %}" >
         add a room to the lobby
     </a>
 </p>
 
-<h4>TODO:</h4>
-<ul>
-    <li>Scrollable log</li>
-    <li>Prompt for name and email before entering chat room</li>
-    <li>Show connected users</li>
-    <li>Show discussion topic</li>
+<ul id="lobbybar">
+    <li><p id="lobbyHeader">People connected: {{ student_count }}</p></li>
+    <li><p id="lobbyHeader">Code: {{ code }}</p></li>
+    <li><p id="lobbyHeader">Topic: {{topic}}</p></li>
 </ul>
 
-
-    <ul id="lobbybar">
-        <li><p id="lobbyHeader">People connected: {{ student_count }}</p></li>
-        <li><p id="lobbyHeader">Code: {{ code }}</p></li>
-        <li><p id="lobbyHeader">Topic: {{topic}}</p></li>
-    </ul>
-
-    <table>
-    <tr>
-        <th>Name</th>
-        <th>People connected</th>
-        <th></th>
-    </tr>
-    <tr>
-        <td>Room#1</td>
-        <td>5</td>
-        <td><form action="http://localhost:8000/room1/"><button>Join</button>
-            </form></td>
-    </tr>
-        <tr>
-            <td>Room#2</td>
-            <td>4</td>
-            <td><form action="http://localhost:8000/room2/"><button>Join</button>
-            </form>
-            </td>
-
-        </tr>
-    </table>
+<p>
     <button id="startLobby">Start</button>
+</p>
 {% endblock content %}
 
 {% block afterbody %}

@@ -21,27 +21,9 @@
     <li><p id="lobbyHeader">Topic: {{topic}}</p></li>
 </ul>
 
-<table>
-    <tr>
-        <th>Name</th>
-        <th>People connected</th>
-        <th></th>
-    </tr>
-    <tr>
-        <td>Room#1</td>
-        <td>5</td>
-        <td><form action="http://localhost:8000/room1/"><button>Join</button>
-        </form></td>
-    </tr>
-    <tr>
-        <td>Room#2</td>
-        <td>4</td>
-        <td><form action="http://localhost:8000/room2/"><button>Join</button>
-        </form>
-        </td>
-    </tr>
-</table>
-<button id="startLobby">Start</button>
+<p>
+    <button id="startLobby">Start</button>
+</p>
 {% endblock content %}
 
 {% block afterbody %}

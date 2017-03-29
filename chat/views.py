@@ -1,5 +1,4 @@
 import random
-import string
 from django.template import RequestContext
 from django.db import transaction
 from django.shortcuts import render, redirect
@@ -8,7 +7,6 @@ from django.core.cache import cache
 import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User
 
-from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import LoginForm
 import logging
@@ -57,13 +55,13 @@ def login(request):
 def new_lobby(request):
     a = User('a@a.a', 'bbbb')
     a.save()
-    #TODO: fix with login
+    # TODO: fix with login
 
     new_lobby = None
     while not new_lobby:
         with transaction.atomic():
             label = random.randint(10, 999999)
-            #a.owner = label
+            # a.owner = label
             cache.set('lobbylabel', label, None)
             if Lobby.objects.filter(label=label).exists():
                 continue
@@ -83,8 +81,7 @@ def open_lobby(request, label):
     c_u.save()
     log.debug('++++++++++++++++++++')
     log.debug(Connected_user.objects.filter(lobby=label).count())
-    f = Connected_user.objects.filter(lobby=label).count()
-    lobby.connected_users = f
+    lobby.connected_users = Connected_user.objects.filter(lobby=label).count()
     lobby.save()
 
     return render(request, "chat/lobby.html", {
@@ -102,13 +99,14 @@ def new_room(request):
         with transaction.atomic():
 
             label = haikunator.haikunate()
-            #label = "aaa"
+            # label = "aaa"
             if Room.objects.filter(label=label).exists():
                 continue
             new_room = Room.objects.create(label=label, lobby_id=cache.get('lobbylabel'))
             log.debug(label)
-            #cache.delete('lobbylabel')
+            # cache.delete('lobbylabel')
     return redirect(chat_room, label=label)
+
 
 def create_rooms(request):
     """
@@ -124,6 +122,7 @@ def create_rooms(request):
     place_rooms(request)
     return HttpResponse(None)
 
+
 def place_rooms(request):
     """
     In coalition with the above method, places chat users into randomized rooms.
@@ -135,7 +134,7 @@ def place_rooms(request):
     random.shuffle(userlist)
     roomList = list(Room.objects.values_list('label', flat=True).filter(lobby=active_lobby))
     for n in roomList:
-        for x in range(0,5):
+        for x in range(0, 5):
             if len(userlist) > 0:
                 c_u_r = Connected_user_room.objects.create(room=n, user=userlist.pop())
                 c_u_r.save()
@@ -154,15 +153,13 @@ def chat_room(request, label):
     # upon first visit (a la etherpad).
     room, created = Room.objects.get_or_create(label=label)
 
-
-
     # We want to show the last 50 messages, ordered most-recent-last
     messages = reversed(room.messages.order_by('-timestamp')[:50])
 
     return render(request, "chat/room.html", {
         'room': room,
         'messages': messages,
-        #'lobby': lobby,
+        # 'lobby': lobby,
     })
 
 

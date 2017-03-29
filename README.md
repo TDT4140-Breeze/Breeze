@@ -1,4 +1,4 @@
-# Breeze
+# Breeze [![Build Status](https://travis-ci.org/TDT4140-Breeze/Breeze.svg?branch=development)](https://travis-ci.org/TDT4140-Breeze/Breeze)
 ## Preferred workflow
 1. Create feature branch from development
 1. Do work on feature branch

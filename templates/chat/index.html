@@ -4,7 +4,7 @@
 <h1> Breeze </h1>
 
 
-<form action="/login/" method="post">
+<form action="/lobbyredirect/" method="post">
     {% csrf_token %}
     <input name="code" onfocus="if (this.value=='Your code here') this.value = ''" type="text" value="Your code here">
     <input type="submit" value="->">

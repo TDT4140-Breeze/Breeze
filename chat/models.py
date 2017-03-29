@@ -7,8 +7,8 @@ from django.utils import timezone
 
 
 class User(models.Model):
-    user_email = models.EmailField(unique=True, primary_key=True)
-    user_password = models.CharField(max_length=200, blank=True)
+    email = models.EmailField(unique=True, primary_key=True)
+    password = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.email

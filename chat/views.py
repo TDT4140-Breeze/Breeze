@@ -1,15 +1,16 @@
 import random
 from django.template import RequestContext
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 import haikunator
 from django.core.cache import cache
 import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User
-
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import LoginForm
+from django.db.utils import IntegrityError
 import logging
 
 log = logging.getLogger(__name__)
@@ -45,7 +46,11 @@ def login(request):
         if form.is_valid() and form.cleaned_data.get('user_password') == form.cleaned_data.get('password_retype'):
 
             # redirect to a new URL:
-            u, created = User.objects.get_or_create(email=form.cleaned_data['user_email'], password=form.cleaned_data['user_password'])
+            try:
+                u, created = User.objects.get_or_create(email=form.cleaned_data['user_email'], password=form.cleaned_data['user_password'])
+            except IntegrityError:
+                messages.info(request, 'Wrong password')
+                return render(request, 'chat/login.html')
             cache.set('loggedIn', form.cleaned_data['user_email'], None)
             if cache.get('lobbydirect'):    #Redirects user to a lobby
                 cache.delete('lobbydirect')
@@ -54,6 +59,10 @@ def login(request):
                 return render(request, "chat/about.html",{
                     'userMail': cache.get('loggedIn')
                     })
+        elif(form.cleaned_data.get('user_password') != form.cleaned_data.get('password_retype')):
+            messages.info(request, "Your passwords don't match!")
+            return render(request, 'chat/login.html')
+
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -88,8 +97,14 @@ def open_lobby(request, label):
         u = User.objects.get(email=username)
     except User.DoesNotExist:
         log.debug('This user does not exist') #throw exception??
-    #log.debug(User.objects.get(email=username))
-    lobby, created = Lobby.objects.get_or_create(label=label)
+
+    #lobby, created = Lobby.objects.get_or_create(label=label)
+    try:
+        lobby = Lobby.objects.get(label=label)
+    except Lobby.DoesNotExist:
+        log.debug('This lobby does not exist')
+        messages.info(request, 'This lobby does not exist!')
+        return redirect(index)
     rooms = lobby.rooms.order_by(label)
 
     c_u, made = Connected_user.objects.get_or_create(lobby=label, user=u.email)

@@ -3,6 +3,14 @@
 {% block content %}
 <h1> Breeze </h1>
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 
 <form action="/lobbyredirect/" method="post">
     {% csrf_token %}
@@ -18,4 +26,7 @@
         </a>
     </p>
 </div>
+
+
 {% endblock content %}
+

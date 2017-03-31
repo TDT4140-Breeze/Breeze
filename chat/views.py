@@ -80,7 +80,7 @@ def new_lobby(request):
     return redirect(open_lobby, label=label)
 
 def open_lobby(request, label):
-    cache.delete('lobbylabel')
+    #cache.delete('lobbylabel')
     username = cache.get('loggedIn')
     #log.debug('abababababab --------- ' + username)
     #log.debug(User.objects.get(email=username))
@@ -100,10 +100,18 @@ def open_lobby(request, label):
     f = Connected_user.objects.filter(lobby=label).count()
     lobby.connected_users = f
     lobby.save()
+    owner = False
+    log.debug(lobby.owner)
+    log.debug(username)
+    log.debug(str(lobby.owner) == str(username))
+    if str(lobby.owner) == str(username):
+        owner = True
+    log.debug(owner)
 
     return render(request, "chat/lobby.html", {
         'lobby': lobby,
         'rooms': rooms,
+        'owner': owner
     })
 
 
@@ -134,7 +142,9 @@ def create_rooms(request):
         new_room(request)
         itr -= 1
     place_rooms(request)
-    return HttpResponse(None)
+    return redirect(open_lobby, label=cache.get('lobbylabel'))
+    #return redirect("lobby/" + cache.get('lobbylabel'))
+    #return HttpResponse(None)
 
 
 def place_rooms(request):

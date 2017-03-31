@@ -9,21 +9,24 @@
     <code>{{ lobby.connected_users  }}</code>
 </p>
 
-<p>
-    <a class="button button-primary" href="{% url 'new_room' %}" >
-        add a room to the lobby
-    </a>
-</p>
 
 <ul id="lobbybar">
-    <li><p id="lobbyHeader">People connected: {{ student_count }}</p></li>
-    <li><p id="lobbyHeader">Code: {{ code }}</p></li>
-    <li><p id="lobbyHeader">Topic: {{topic}}</p></li>
+    <li><p id="lobbyHeader">People connected: {{ lobby.connected_users }}</p></li>
+    <li><p id="lobbyHeader">Code: {{ lobby.label }}</p></li>
+    <li><p id="lobbyHeader">Topic: {{ lobby.topic }}</p></li>
 </ul>
-
-<p>
-    <button id="startLobby">Start</button>
+{% if owner %}
+<p id="startButton">
+    <a class="button button-primary" href="{% url 'new_room' %}" >
+        Start the lobby
+    </a>
 </p>
+{% else %}
+<p>
+    Please wait patiently for the lobby to start
+</p>
+{% endif %}
+
 {% endblock content %}
 
 {% block afterbody %}

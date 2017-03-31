@@ -18,15 +18,24 @@
     <input type="submit" value="->">
 </form>
 
+{% if not loggedIn %}
 <div>
-    <p> Already a user? </p>
+    <p> Already a user? Or new here? </p>
     <p>
         <a class="button button-primary" href="{% url 'login' %}">
-            Log in
+            Log in/Register
         </a>
     </p>
 </div>
+{% endif %}
 
+{% if loggedIn %}
+<p>You are logged in.</p>
+<p>
+<a class="button button-primary" href="{% url 'logout' %}">
+    logout
+    </a>
+    </p>
+{% endif %}
 
 {% endblock content %}
-

@@ -27,7 +27,10 @@ def saveLobby(request):
         log.debug(code)
         cache.set('lobbylabel', code, None)
         cache.set('lobbydirect', True)
-    return render(request, "chat/login.html")
+    if cache.get('loggedIn') != None:
+        return redirect(open_lobby, label=cache.get('lobbylabel'))
+    else:
+        return render(request, "chat/login.html")
 
 def lobby(request):
     return render(request, "chat/lobby.html")
@@ -80,7 +83,6 @@ def new_lobby(request):
     while not new_lobby:
         with transaction.atomic():
             label = random.randint(10, 999999)
-            #a.owner = label
             cache.set('lobbylabel', label, None)
             if Lobby.objects.filter(label=label).exists():
                 continue
@@ -89,10 +91,7 @@ def new_lobby(request):
     return redirect(open_lobby, label=label)
 
 def open_lobby(request, label):
-    #cache.delete('lobbylabel')
     username = cache.get('loggedIn')
-    #log.debug('abababababab --------- ' + username)
-    #log.debug(User.objects.get(email=username))
     try:
         u = User.objects.get(email=username)
     except User.DoesNotExist:
@@ -209,6 +208,16 @@ def index(request):
 
     Enter code from lecturer or login to create own lobby
     """
+    log.debug('logged in as ' + str(cache.get('loggedIn')))
+    loggedIn = False
+    if cache.get('loggedIn') != None:
+        loggedIn = True
+        #log.debug('made true')
+    return render(request, "chat/index.html", {
+        'loggedIn': loggedIn
+    })
 
-    return render(request, "chat/index.html")
-
+def logout(request):
+    cache.delete('loggedIn')
+    messages.info(request, 'Successfully logged out')
+    return redirect(index)

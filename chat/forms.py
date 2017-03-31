@@ -24,4 +24,3 @@ class LoginForm(forms.Form):
         if pass1 != pass2:
             raise forms.ValidationError("Passwords don't match")
         return self.cleaned_data
-

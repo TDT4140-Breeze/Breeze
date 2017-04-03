@@ -11,6 +11,7 @@ from .models import Room, Lobby, Connected_user_room, Connected_user, User
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import LoginForm
+from django.contrib.auth import logout
 import logging
 
 log = logging.getLogger(__name__)
@@ -26,6 +27,10 @@ def lobby(request):
 
 def post_chat(request):
     return render(request, "chat/post_chat.html")
+
+
+def profile(request):
+    return render(request, "chat/profile.html")
 
 
 def login(request):
@@ -52,6 +57,23 @@ def login(request):
         form = LoginForm()
 
     return render(request, 'chat/login.html', RequestContext(request))
+
+
+def logout_user(request):
+    cache.delete('loggedIn')
+    return redirect(index)
+
+
+def change_password(request):
+    user_email = cache.get('loggedIn')
+    if request.method == 'POST':
+        # creates a form instance and populates it with data from the request:
+        form = LoginForm(request.POST, request.FILES)
+        # checks whether it's valid:
+        if form.is_valid() and form.cleaned_data.get('user_password') == form.cleaned_data.get('password_retype'):
+            u, created = User.objects.update_or_create(email=user_email, defaults={'password': form.cleaned_data.get('user_password')},)
+    return render(request, 'chat/profile.html')
+
 
 
 def new_lobby(request):

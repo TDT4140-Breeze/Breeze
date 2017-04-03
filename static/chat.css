@@ -70,3 +70,41 @@ h2 {
     font-size: 35px;
     font-weight: 600;
 }
+
+button.accordion.active, button.accordion:hover {
+    background-color: #ddd;
+}
+
+
+div.change_password {
+    position: relative;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f0f0d2;
+    width: 40%;
+}
+
+button.accordion {
+    transition: 0.4s;
+}
+
+button.accordion:after {
+    content: '\002B';
+    color: #777;
+    font-weight: bold;
+}
+
+button.accordion.active:after {
+    content: "\2212";
+}
+
+#profilebar li {
+    display: inline;
+    float: right;
+    font-size: 20px;
+}
+
+input.submit {
+    display: block;
+}

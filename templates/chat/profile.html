@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Your profile</h1>
+    <p>Here you can see your previous lobbies and use them as templates. You can also see your chat logs and change your password. </p>
+    <ul id="profilebar">
+    <li><form action="/logout/" method="get"><input type="submit" value="Log out" name="logout" class="logout"></form></li>
+    </ul>
+    <p>Previous lobbies</p>
+    <!-- Must retrieve previous lobbies
+    1. Find lobbies the user has created
+    2. Create table with lobbies
+    -->
+<table>
+    <th>Name</th>
+    <th>Label</th>
+</table>
+
+<p>Your chat logs</p>
+    <!-- Must retrieve chat logs from previous chats
+    1. Find chat rooms the user has been in.
+    2. Find messages from these chat rooms.
+    3. Show them in a table, grouped by chat rooms.
+    -->
+    <table>
+    <th>Room</th>
+</table>
+<button class="accordion">Change password</button>
+    <div class="change_password">
+        <p>Enter new password</p>
+        <form action="/change_password/" method="post">
+            <label for="user_password">New password:</label>
+            <input id="user_password" type="password" name="user_password" value="">
+            <label for="password_retype">Please reenter password:</label>
+            <input id="password_retype" type="password" name="password_retype" value="">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Apply" class="submit" name="submit">
+        </form>
+    </div>
+<table>
+
+</table>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+        acc[i].onclick = function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.maxHeight){
+          panel.style.maxHeight = null;
+        } else {
+          panel.style.maxHeight = panel.scrollHeight + "px";
+        }
+      }
+    }
+    </script>
+
+{% endblock content %}

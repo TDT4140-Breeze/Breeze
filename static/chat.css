@@ -87,3 +87,22 @@ footer {
 input[type="submit"] {
     border: 1px solid #333333;
 }
+
+div.accordion_form {
+    position: relative;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    width: 40%;
+    border: 0px solid;
+    border-radius: 2px;
+}
+
+button.accordion:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    margin-left: 5px;
+}
+
+button.accordion.active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+}

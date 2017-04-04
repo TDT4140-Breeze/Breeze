@@ -8,9 +8,11 @@ import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User
 from django.contrib import messages
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from .forms import LoginForm
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
+from .forms import LoginForm, lobbyForm
 from django.db.utils import IntegrityError
+from django.core.files import File
+from django.views.static import serve
 import logging
 
 log = logging.getLogger(__name__)
@@ -78,7 +80,17 @@ def login(request):
 
 def new_lobby(request):
     a = User.objects.get(email=cache.get('loggedIn'))
-
+    if request.method == 'POST':
+        log.debug("ok")
+        form = lobbyForm(request.POST, request.FILES)
+        log.debug(form.is_valid())
+        log.debug(form.cleaned_data.get('topic'))
+        if form.is_valid():
+            topic = str(form.lobby_topic())
+            log.debug(topic + " <---")
+    else:
+        topic = " "
+    log.debug('aaaaaaa-- -- -- - -' + str(topic))
     new_lobby = None
     while not new_lobby:
         with transaction.atomic():
@@ -86,7 +98,7 @@ def new_lobby(request):
             cache.set('lobbylabel', label, None)
             if Lobby.objects.filter(label=label).exists():
                 continue
-            new_lobby = Lobby.objects.create(label=label, topic="algoritmer og datastrukturer", owner=a)
+            new_lobby = Lobby.objects.create(label=label, topic=topic, owner=a)
 
     return redirect(open_lobby, label=label)
 
@@ -194,10 +206,12 @@ def chat_room(request, label):
 
     # We want to show the last 50 messages, ordered most-recent-last
     messages = reversed(room.messages.order_by('-timestamp')[:50])
+    allmessages = reversed(room.messages.order_by('timestamp'))
 
     return render(request, "chat/room.html", {
         'room': room,
         'messages': messages,
+        'allmessages': allmessages,
         #'lobby': lobby,
     })
 
@@ -208,11 +222,9 @@ def index(request):
 
     Enter code from lecturer or login to create own lobby
     """
-    log.debug('logged in as ' + str(cache.get('loggedIn')))
     loggedIn = False
     if cache.get('loggedIn') != None:
         loggedIn = True
-        #log.debug('made true')
     return render(request, "chat/index.html", {
         'loggedIn': loggedIn
     })
@@ -221,3 +233,24 @@ def logout(request):
     cache.delete('loggedIn')
     messages.info(request, 'Successfully logged out')
     return redirect(index)
+
+
+def download(request):
+    open('logs.txt', 'w').close() # empties logs.txt
+    label = HttpRequest.get_full_path(request)[11:]
+    room = Room.objects.get(label=label)
+
+    allmessages = reversed(room.messages.order_by('-timestamp'))
+
+    messages = []
+    for message in allmessages:
+        messages.append(message)
+
+    filecontent = open('logs.txt', 'r+')
+    django_file = File(filecontent)
+    for message in messages:
+        django_file.write(message.formatted_timestamp + " - " + message.handle + ": " + message.message + "\n")
+    response = HttpResponse(django_file, content_type='text')
+    response['Content-Disposition'] = 'attachment; filename="logs.txt"'
+    django_file.close()
+    return response

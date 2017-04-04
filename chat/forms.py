@@ -24,3 +24,10 @@ class LoginForm(forms.Form):
         if pass1 != pass2:
             raise forms.ValidationError("Passwords don't match")
         return self.cleaned_data
+
+class lobbyForm(forms.Form):
+    topic = forms.CharField()
+
+    def lobby_topic(self):
+        data = self.cleaned_data.get('topic')
+        return data

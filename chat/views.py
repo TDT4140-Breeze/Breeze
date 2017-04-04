@@ -9,7 +9,7 @@ from .models import Room, Lobby, Connected_user_room, Connected_user, User
 from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
-from .forms import LoginForm
+from .forms import LoginForm, lobbyForm
 from django.db.utils import IntegrityError
 from django.core.files import File
 from django.views.static import serve
@@ -80,7 +80,17 @@ def login(request):
 
 def new_lobby(request):
     a = User.objects.get(email=cache.get('loggedIn'))
-
+    if request.method == 'POST':
+        log.debug("ok")
+        form = lobbyForm(request.POST, request.FILES)
+        log.debug(form.is_valid())
+        log.debug(form.cleaned_data.get('topic'))
+        if form.is_valid():
+            topic = str(form.lobby_topic())
+            log.debug(topic + " <---")
+    else:
+        topic = " "
+    log.debug('aaaaaaa-- -- -- - -' + str(topic))
     new_lobby = None
     while not new_lobby:
         with transaction.atomic():
@@ -88,7 +98,7 @@ def new_lobby(request):
             cache.set('lobbylabel', label, None)
             if Lobby.objects.filter(label=label).exists():
                 continue
-            new_lobby = Lobby.objects.create(label=label, topic="algoritmer og datastrukturer", owner=a)
+            new_lobby = Lobby.objects.create(label=label, topic=topic, owner=a)
 
     return redirect(open_lobby, label=label)
 

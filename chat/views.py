@@ -8,9 +8,11 @@ import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User
 from django.contrib import messages
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from .forms import LoginForm
 from django.db.utils import IntegrityError
+from django.core.files import File
+from django.views.static import serve
 import logging
 
 log = logging.getLogger(__name__)
@@ -194,10 +196,12 @@ def chat_room(request, label):
 
     # We want to show the last 50 messages, ordered most-recent-last
     messages = reversed(room.messages.order_by('-timestamp')[:50])
+    allmessages = reversed(room.messages.order_by('timestamp'))
 
     return render(request, "chat/room.html", {
         'room': room,
         'messages': messages,
+        'allmessages': allmessages,
         #'lobby': lobby,
     })
 
@@ -208,11 +212,9 @@ def index(request):
 
     Enter code from lecturer or login to create own lobby
     """
-    log.debug('logged in as ' + str(cache.get('loggedIn')))
     loggedIn = False
     if cache.get('loggedIn') != None:
         loggedIn = True
-        #log.debug('made true')
     return render(request, "chat/index.html", {
         'loggedIn': loggedIn
     })
@@ -221,3 +223,24 @@ def logout(request):
     cache.delete('loggedIn')
     messages.info(request, 'Successfully logged out')
     return redirect(index)
+
+
+def download(request):
+    open('logs.txt', 'w').close() # empties logs.txt
+    label = HttpRequest.get_full_path(request)[11:]
+    room = Room.objects.get(label=label)
+
+    allmessages = reversed(room.messages.order_by('-timestamp'))
+
+    messages = []
+    for message in allmessages:
+        messages.append(message)
+
+    filecontent = open('logs.txt', 'r+')
+    django_file = File(filecontent)
+    for message in messages:
+        django_file.write(message.formatted_timestamp + " - " + message.handle + ": " + message.message + "\n")
+    response = HttpResponse(django_file, content_type='text')
+    response['Content-Disposition'] = 'attachment; filename="logs.txt"'
+    django_file.close()
+    return response

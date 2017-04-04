@@ -58,13 +58,14 @@ DATABASES = {
 #    'default': dj_database_url.config(default="postgres:///channels-example", conn_max_age=500)
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'breeze',
-        'USER': 'admin',
+        'NAME': 'postgres',
+        'USER': 'postgres',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = (
     {
@@ -84,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = (
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Oslo'   #TODO: Fix? If possible
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -139,3 +140,4 @@ LOGGING = {
         },
     },
 }
+

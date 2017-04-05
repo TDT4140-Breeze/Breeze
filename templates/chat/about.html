@@ -3,14 +3,21 @@
 {% block content %}
 <h1>Breeze</h1>
 <p class="deck">
-    Press the button to go to a random lobby. Eventually we will have
-    a field input thing here, but for now it's just a button.
+ Logged in as {{  userMail   }} <br/>
+    This is your page. Here you can (soon) watch your previous lobbies and chats. <br/>
+    For now, you can only make a new lobby. Try it out!
 </p>
-<p>
-    <a class="button button-primary" href="{% url 'new_lobby' %}">
-        Create new lobby
-    </a>
-</p>
+
+    <form action="{% url 'new_lobby' %}" method="post">
+        <label for="topic">Topic:</label>
+        <input id="topic" type="text" name="topic" value="">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Create new lobby">
+
+    </form>
+
+
 <p class="quiet">
     On this page we also need a button for lecturers and a
     general login button.

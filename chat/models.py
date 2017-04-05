@@ -7,8 +7,8 @@ from django.utils import timezone
 
 
 class User(models.Model):
-    user_email = models.EmailField(unique=True, primary_key=True)
-    user_password = models.CharField(max_length=200, blank=True)
+    email = models.EmailField(unique=True, primary_key=True)
+    password = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.email
@@ -53,7 +53,7 @@ class Message(models.Model):
 
     @property
     def formatted_timestamp(self):
-        return self.timestamp.strftime('%b %-d %-I:%M %p')
+        return self.timestamp.strftime('%H:%M')
 
     def as_dict(self):
         return {'handle': self.handle, 'message': self.message, 'timestamp': self.formatted_timestamp}

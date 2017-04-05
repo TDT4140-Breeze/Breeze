@@ -8,7 +8,6 @@
     <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code>
 
     <br/>
-
     This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected
 
 </p>
@@ -38,6 +37,10 @@
         </tfoot>
     </table>
 </form>
+
+
+<a href="{% url 'download' %}?{{ room.label }}">Download chat logs of this conversation</a>
+
 
 <h4>TODO:</h4>
 <ul>

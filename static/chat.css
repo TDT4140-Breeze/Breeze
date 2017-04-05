@@ -1,5 +1,6 @@
 body {
     padding-top: 4em;
+    background-image: url("mooning.png");
 }
 
 p.deck {
@@ -57,7 +58,9 @@ h2 {
 #save {
     display: inline;
     margin: 10px;
-    color: #0FA0CE;
+    color: #3d78fd;
+    border: 1px solid #333333;
+
 }
 
 .button-primary #home_button {
@@ -71,12 +74,7 @@ h2 {
     font-weight: 600;
 }
 
-button.accordion.active, button.accordion:hover {
-    background-color: #ddd;
-}
-
-
-div.change_password {
+div.accordion_form {
     position: relative;
     max-height: 0;
     overflow: hidden;
@@ -89,16 +87,6 @@ button.accordion {
     transition: 0.4s;
 }
 
-button.accordion:after {
-    content: '\002B';
-    color: #777;
-    font-weight: bold;
-}
-
-button.accordion.active:after {
-    content: "\2212";
-}
-
 #profilebar li {
     display: inline;
     float: right;
@@ -107,4 +95,16 @@ button.accordion.active:after {
 
 input.submit {
     display: block;
+    width: 40%;
+    border: 0px solid;
+    border-radius: 2px;
+}
+
+button.accordion:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    margin-left: 5px;
+}
+
+button.accordion.active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
 }

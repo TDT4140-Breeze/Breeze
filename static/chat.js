@@ -22,6 +22,12 @@ $(function() {
     };
 
     $("#chatform").on("submit", function(event) {
+        if($('#message').val().replace(/ /g , '') === ''){
+        $("#message").val('').focus();
+        return false;
+        };
+        //else:
+        //alert('bbbb');
         var usnm = document.getElementById("user").innerHTML;
         var message = {
             handle: usnm,

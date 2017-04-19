@@ -4,18 +4,18 @@
 {% load staticfiles %}
 <h1>{{ room.label }}</h1>
 <p class="quiet">
-    Anyone with this URL can join the room and chat:
-    <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code>
+    Welcome to the chatroom, <span id="user">{{ user.email }}</span>
 
     <br/>
     This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected
 
 </p>
-
+        <!--
 <p>
     <label for="handle">Your name:</label>
     <input id="handle" type="text" placeholder="handle">
 </p>
+        -->
 <form id="chatform">
     <table id="chat">
         <tbody>

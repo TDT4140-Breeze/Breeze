@@ -22,8 +22,9 @@ $(function() {
     };
 
     $("#chatform").on("submit", function(event) {
+        var usnm = document.getElementById("user").innerHTML;
         var message = {
-            handle: $('#handle').val(),
+            handle: usnm,
             message: $('#message').val(),
         }
         chatsock.send(JSON.stringify(message));

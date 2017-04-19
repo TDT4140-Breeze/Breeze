@@ -20,17 +20,11 @@ def ws_connect(message):
         #    return
         room = Room.objects.get(label=label)
     except ValueError:
-        log.debug('invalid ws path=%s', message['path'])
+        #log.debug('invalid ws path=%s', message['path'])
         return
     except Room.DoesNotExist:
         log.debug('ws room does not exist label=%s', label)
         return
-
-    log.debug('chat connect room=%s client=%s:%s',
-        room.label, message['client'][0], message['client'][1])
-    #u = User('b@b.b', '')
-
-    #TODO: actually log in
 
     # Need to be explicit about the channel layer so that testability works
     # This may be a FIXME?

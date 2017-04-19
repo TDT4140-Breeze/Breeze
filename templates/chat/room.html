@@ -17,6 +17,7 @@
 </p>
         -->
 <form id="chatform">
+    <div id="chatboundary" style="overflow-y:scroll; height:450px;">
     <table id="chat">
         <tbody>
             {% for message in messages %}
@@ -27,15 +28,18 @@
             </tr>
             {% endfor %}
         </tbody>
-        <tfoot>
+        </table>
+        </div>
+        <table>
             <tr>
                 <td>Say something:</td>
                 <td colspan=2>
                     <input id="message" type="text" placeholder="message">
                     <button type="submit" id="go">Say it</button>
                 </td>
-        </tfoot>
-    </table>
+        </table>
+
+
 </form>
 
 
@@ -44,10 +48,7 @@
 
 <h4>TODO:</h4>
 <ul>
-    <li>Scrollable log</li>
-    <li>Prompt for name and email before entering chat room</li>
     <li>Show connected users</li>
-    <li>Show discussion topic</li>
 </ul>
 
 {% endblock content %}

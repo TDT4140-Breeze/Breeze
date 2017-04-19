@@ -19,6 +19,8 @@ $(function() {
         )
 
         chat.append(ele)
+        var boundary = document.getElementById("chatboundary");
+        boundary.scrollTop = boundary.scrollHeight;
     };
 
     $("#chatform").on("submit", function(event) {
@@ -35,6 +37,8 @@ $(function() {
         }
         chatsock.send(JSON.stringify(message));
         $("#message").val('').focus();
+        //$("#chatboundary").scrollTop = $("#chatboundary").scrollHeight;
+
         return false;
     });
 });

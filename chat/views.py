@@ -44,7 +44,9 @@ def post_chat(request):
 
 
 def profile(request):
-    return render(request, "chat/profile.html")
+    messagelist = ["test", "test1", "test2"]
+    lobbylist = ["lobby1", "lobby2"]
+    return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'messagelist': messagelist})
 
 
 def login(request):
@@ -276,3 +278,4 @@ def download(request):
     response['Content-Disposition'] = 'attachment; filename="logs.txt"'
     django_file.close()
     return response
+

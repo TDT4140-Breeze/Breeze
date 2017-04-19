@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load staticfiles %}
+
     <h1>Your profile</h1>
     <p>Here you can see your previous lobbies and use them as templates. You can also see your chat logs and change your password. </p>
     <ul id="profilebar">
@@ -12,10 +14,17 @@
     2. Create table with lobbies
     -->
 <table>
+
     <th>Name</th>
+    <tr>
+        {% for lobby in lobbylist %}
+            <td>{{ lobby }}</td>
+    </tr>
+    <tr>
+        {% endfor %}
+    </tr>
     <th>Label</th>
 </table>
-
 <p>Your chat logs</p>
     <!-- Must retrieve chat logs from previous chats
     1. Find chat rooms the user has been in.
@@ -24,9 +33,16 @@
     -->
     <table>
     <th>Room</th>
+    <tr>
+        {% for message in messagelist %}
+            <td>{{ message }}</td>
+    </tr>
+    <tr>
+        {% endfor %}
+    </tr>
 </table>
 <button class="accordion">Change password</button>
-    <div class="change_password">
+    <div class="accordion_form">
         <p>Enter new password</p>
         <form action="/change_password/" method="post">
             <label for="user_password">New password:</label>
@@ -41,22 +57,9 @@
 <table>
 
 </table>
-
-    <script>
-        var acc = document.getElementsByClassName("accordion");
-        var i;
-
-        for (i = 0; i < acc.length; i++) {
-        acc[i].onclick = function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.maxHeight){
-          panel.style.maxHeight = null;
-        } else {
-          panel.style.maxHeight = panel.scrollHeight + "px";
-        }
-      }
-    }
-    </script>
-
 {% endblock content %}
+
+{% block afterbody %}
+    <script type="text/javascript" src='{% static "jquery-1.12.1.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "accordion.js" %}'></script>
+{% endblock afterbody %}

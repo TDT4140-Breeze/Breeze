@@ -79,7 +79,6 @@ div.accordion_form {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
-    background-color: #f0f0d2;
     width: 40%;
 }
 
@@ -96,8 +95,13 @@ button.accordion {
 input.submit {
     display: block;
     width: 40%;
-    border: 0px solid;
-    border-radius: 2px;
+    border: 1px solid;
+    border-radius: 4px;
+}
+
+input.logout {
+    border: 1px solid;
+    border-radius: 4px;
 }
 
 button.accordion:after {
@@ -108,3 +112,4 @@ button.accordion:after {
 button.accordion.active:after {
     content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
+

@@ -23,16 +23,20 @@ def about(request, user):
         'userMail': user
     })
 
+
 def saveLobby(request):
+    if request.POST['code'] == "Your code here" or request.POST['code'] == "":
+        return render(request, "chat/index.html")
     if 'code' in request.POST:
-        code = request.POST['code']
-        log.debug(code)
-        cache.set('lobbylabel', code, None)
-        cache.set('lobbydirect', True)
+            code = request.POST['code']
+            log.debug(code)
+            cache.set('lobbylabel', code, None)
+            cache.set('lobbydirect', True)
     if cache.get('loggedIn') != None:
         return redirect(open_lobby, label=cache.get('lobbylabel'))
     else:
         return render(request, "chat/login.html")
+
 
 def lobby(request):
     return render(request, "chat/lobby.html")

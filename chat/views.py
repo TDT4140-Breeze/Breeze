@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, render_to_response
 import haikunator
 from django.core.cache import cache
 import math
-from .models import Room, Lobby, Connected_user_room, Connected_user, User
+from .models import Room, Lobby, Connected_user_room, Connected_user, User, Message
 from django.contrib import messages
 from django.shortcuts import render
 
@@ -44,7 +44,26 @@ def post_chat(request):
 
 
 def profile(request):
-    messagelist = ["test", "test1", "test2"]
+    """
+    1. Get rooms
+    2. Get id's of rooms
+    3. Get messages using room id
+    """
+    email = "test@email.com"
+    cache.set('loggedIn', email, None)
+    user = cache.get('loggedIn')
+    user_rooms = Connected_user_room(8, email)
+    user_rooms.save()
+    rooms = Connected_user_room.objects.filter(user=user)
+
+
+    roomlist = []
+    messagelist = list(rooms.all())
+    for room in rooms.all():
+        messagelist.append(room)
+    for room in roomlist:
+        messagelist.append(Message.objects.filter(room=room))
+
     lobbylist = ["lobby1", "lobby2"]
     return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'messagelist': messagelist})
 

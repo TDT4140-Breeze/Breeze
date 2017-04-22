@@ -8,6 +8,8 @@
 
     <br/>
     This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected
+    <br/>
+    The topic for this discussion is: {{ room.lobby.topic }}
 
 </p>
         <!--
@@ -45,7 +47,7 @@
 
 <a href="{% url 'download' %}?{{ room.label }}" class="lobbyLink">Download chat logs of this conversation</a>
 <a href="{% url 'logout' %}" class="lobbyLink">Go to profile page</a>
-<a href="{% url 'logout' %}" class="lobbyLink">Leave chat</a>
+<a href="{% url 'post_chat' %}" class="post_chat">Leave chat</a>
 
 
 

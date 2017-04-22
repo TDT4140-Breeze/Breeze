@@ -35,7 +35,7 @@
     <th>Room</th>
     <tr>
         {% for message in messagelist %}
-            <td>{{ message }}</td>
+            <td><a href="{% url 'download' %}?{{ message }}">{{ message }}</a></td>
     </tr>
     <tr>
         {% endfor %}

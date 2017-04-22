@@ -55,15 +55,22 @@ def profile(request):
     user_rooms = Connected_user_room(8, email)
     user_rooms.save()
     rooms = Connected_user_room.objects.filter(user=user)
+    #room_names = rooms.get(user=user)
+
+    ids = Connected_user_room.objects.values_list('room', flat=True).filter(user=user)
+    #my_models = Room.objects.filter(pk__in=set(ids))
 
 
     roomlist = []
-    messagelist = list(rooms.all())
+    messagelist = []
+    for id in ids:
+        messagelist.append(id)
+    """"
     for room in rooms.all():
         messagelist.append(room)
     for room in roomlist:
         messagelist.append(Message.objects.filter(room=room))
-
+    """
     lobbylist = ["lobby1", "lobby2"]
     return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'messagelist': messagelist})
 

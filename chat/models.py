@@ -4,8 +4,6 @@ from django.db import models
 from django.utils import timezone
 
 
-
-
 class User(models.Model):
     email = models.EmailField(unique=True, primary_key=True)
     password = models.CharField(max_length=200, blank=True)
@@ -13,15 +11,18 @@ class User(models.Model):
     def __str__(self):
         return self.email
 
+
 class Connected_user(models.Model):
     lobby = models.SlugField()
     user = models.EmailField()
+
 
 class Lobby(models.Model):
     owner = models.ForeignKey(User, related_name='owner', null=True)
     label = models.SlugField(unique=True, primary_key=True)
     topic = models.TextField()
     connected_users = models.IntegerField(default=0)
+
 
 class Connected_user_room(models.Model):
     room = models.SlugField()
@@ -41,6 +42,7 @@ class Room(models.Model):
 
     def __unicode__(self):
         return self.label
+
 
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages')

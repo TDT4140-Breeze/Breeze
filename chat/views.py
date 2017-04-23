@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.shortcuts import render
 
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
-from .forms import LoginForm, lobbyForm
+from .forms import LoginForm, lobbyForm, PasswordForm
 from django.db.utils import IntegrityError
 from django.core.files import File
 from django.views.static import serve
@@ -65,12 +65,6 @@ def profile(request):
     messagelist = []
     for id in ids:
         messagelist.append(id)
-    """"
-    for room in rooms.all():
-        messagelist.append(room)
-    for room in roomlist:
-        messagelist.append(Message.objects.filter(room=room))
-    """
     lobbylist = ["lobby1", "lobby2"]
     return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'messagelist': messagelist})
 
@@ -118,14 +112,20 @@ def logout_user(request):
 
 def change_password(request):
     user_email = cache.get('loggedIn')
+    user = User(email=user_email)
     if request.method == 'POST':
         # creates a form instance and populates it with data from the request:
-        form = LoginForm(request.POST, request.FILES)
+        form = PasswordForm(request.POST, request.FILES)
         # checks whether it's valid:
         if form.is_valid() and form.cleaned_data.get('user_password') == form.cleaned_data.get('password_retype'):
-            u, created = User.objects.update_or_create(email=user_email, defaults={'password': form.cleaned_data.get('user_password')},)
-    return render(request, 'chat/profile.html')
-
+            #u, created = User.objects.update_or_create(email=user_email, defaults={'password': form.cleaned_data.get('user_password')},)
+            user.password = form.cleaned_data['user_password']
+            user.save()
+            messages.info(request, "Password successfully changed!")
+        elif (form.cleaned_data.get('user_password') != form.cleaned_data.get('password_retype')):
+            messages.info(request, "Your passwords don't match!")
+            return redirect(profile)
+    return redirect(profile)
 
 
 def new_lobby(request):

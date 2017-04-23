@@ -4,6 +4,13 @@
 {% load staticfiles %}
 
     <h1>Your profile</h1>
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
     <p>Here you can see your previous lobbies and use them as templates. You can also see your chat logs and change your password. </p>
     <ul id="profilebar">
     <li><form action="/logout/" method="get"><input type="submit" value="Log out" name="logout" class="logout"></form></li>
@@ -43,7 +50,6 @@
 </table>
 <button class="accordion">Change password</button>
     <div class="accordion_form">
-        <p>Enter new password</p>
         <form action="/change_password/" method="post">
             <label for="user_password">New password:</label>
             <input id="user_password" type="password" name="user_password" value="">

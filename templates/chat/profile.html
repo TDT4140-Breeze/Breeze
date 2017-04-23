@@ -15,34 +15,24 @@
     <ul id="profilebar">
     <li><form action="/logout/" method="get"><input type="submit" value="Log out" name="logout" class="logout"></form></li>
     </ul>
-    <p>Previous lobbies</p>
-    <!-- Must retrieve previous lobbies
-    1. Find lobbies the user has created
-    2. Create table with lobbies
-    -->
-<table>
-
-    <th>Name</th>
-    <tr>
-        {% for lobby in lobbylist %}
-            <td>{{ lobby }}</td>
-    </tr>
-    <tr>
-        {% endfor %}
-    </tr>
+    <h4>Previous lobbies</h4>
+    <!-- Previous lobbies the user has created-->
+    <table>
     <th>Label</th>
-</table>
-<p>Your chat logs</p>
-    <!-- Must retrieve chat logs from previous chats
-    1. Find chat rooms the user has been in.
-    2. Find messages from these chat rooms.
-    3. Show them in a table, grouped by chat rooms.
-    -->
+    {% for lobby in lobbylist %}
+            <tr>
+            <td><a href="/lobby/{{ lobby }}">{{ lobby }}</a></td>
+            </tr>
+    {% endfor %}
+    </table>
+
+    <h4>Chat logs</h4>
+    <!-- Shows download links to chat logs from previous chats-->
     <table>
     <th>Room</th>
     <tr>
-        {% for message in messagelist %}
-            <td><a href="{% url 'download' %}?{{ message }}">{{ message }}</a></td>
+        {% for room in roomlist %}
+            <td><a href="{% url 'download' %}?{{ room }}">{{ room }}</a></td>
     </tr>
     <tr>
         {% endfor %}

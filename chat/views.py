@@ -42,31 +42,26 @@ def lobby(request):
 def post_chat(request):
     return render(request, "chat/post_chat.html")
 
-
+#Shows profile with previous lobbies and chat logs
 def profile(request):
-    """
-    1. Get rooms
-    2. Get id's of rooms
-    3. Get messages using room id
-    """
     email = "test@email.com"
     cache.set('loggedIn', email, None)
     user = cache.get('loggedIn')
     user_rooms = Connected_user_room(8, email)
     user_rooms.save()
-    rooms = Connected_user_room.objects.filter(user=user)
-    #room_names = rooms.get(user=user)
-
-    ids = Connected_user_room.objects.values_list('room', flat=True).filter(user=user)
-    #my_models = Room.objects.filter(pk__in=set(ids))
-
-
+    room_id= Connected_user_room.objects.values_list('room', flat=True).filter(user=user)
+    lobby_id = Lobby.objects.values_list('label', flat=True).filter(owner=user)
+    lobby_topic = Lobby.objects.values_list('topic', flat=True).filter(owner=user)
     roomlist = []
-    messagelist = []
-    for id in ids:
-        messagelist.append(id)
-    lobbylist = ["lobby1", "lobby2"]
-    return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'messagelist': messagelist})
+    for id in room_id:
+        roomlist.append(id)
+    lobbylist = []
+    lobby_topic_list = []
+    for id in lobby_id:
+        lobbylist.append(id)
+    for topic in lobby_topic:
+        lobby_topic_list.append(topic)
+    return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'roomlist': roomlist, 'lobby_topics': lobby_topic_list})
 
 
 def login(request):

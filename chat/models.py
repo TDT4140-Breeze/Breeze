@@ -22,6 +22,10 @@ class Lobby(models.Model):
     label = models.SlugField(unique=True, primary_key=True)
     topic = models.TextField()
     connected_users = models.IntegerField(default=0)
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.label
 
 
 class Connected_user_room(models.Model):
@@ -40,15 +44,15 @@ class Room(models.Model):
     lobby = models.ForeignKey(Lobby, related_name='rooms', null=True)
 
 
-    def __unicode__(self):
-        return self.label
+    def __str__(self):
+        return self.label + ' - ' + self.lobby.label
 
 
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages')
     handle = models.SlugField()
     message = models.TextField(max_length=140)
-    timestamp = models.TimeField(default=timezone.now, db_index=True)
+    timestamp = models.TimeField(default=timezone.localtime(timezone.now()), db_index=True)
 
     def __str__(self):
         return str(self.timestamp[0:8]) + " " + str(self.handle) + ": " + str(self.message)

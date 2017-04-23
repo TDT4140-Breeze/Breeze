@@ -15,6 +15,8 @@ from django.db.utils import IntegrityError
 from django.core.files import File
 from django.views.static import serve
 import logging
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 log = logging.getLogger(__name__)
 
@@ -24,16 +26,20 @@ def about(request, user):
         'userMail': user
     })
 
+
 def saveLobby(request):
+    if request.POST['code'] == "Your code here" or request.POST['code'] == "":
+        return render(request, "chat/index.html")
     if 'code' in request.POST:
-        code = request.POST['code']
-        log.debug(code)
-        cache.set('lobbylabel', code, None)
-        cache.set('lobbydirect', True)
+            code = request.POST['code']
+            log.debug(code)
+            cache.set('lobbylabel', code, None)
+            cache.set('lobbydirect', True)
     if cache.get('loggedIn') != None:
         return redirect(open_lobby, label=cache.get('lobbylabel'))
     else:
         return render(request, "chat/login.html")
+
 
 def lobby(request):
     return render(request, "chat/lobby.html")
@@ -97,7 +103,6 @@ def login(request):
         return render(request, "chat/login.html")
     return redirect(open_lobby, label=cache.get('lobbylabel'))
 
-    return render(request, 'chat/login.html', RequestContext(request))
 
 
 def logout_user(request):
@@ -132,10 +137,8 @@ def new_lobby(request):
         log.debug(form.cleaned_data.get('topic'))
         if form.is_valid():
             topic = str(form.lobby_topic())
-            log.debug(topic + " <---")
     else:
         topic = " "
-    log.debug('aaaaaaa-- -- -- - -' + str(topic))
     new_lobby = None
     while not new_lobby:
         with transaction.atomic():
@@ -143,7 +146,7 @@ def new_lobby(request):
             cache.set('lobbylabel', label, None)
             if Lobby.objects.filter(label=label).exists():
                 continue
-            new_lobby = Lobby.objects.create(label=label, topic=topic, owner=a)
+            new_lobby = Lobby.objects.create(label=label, topic=topic, owner=a, active=False)
 
     return redirect(open_lobby, label=label)
 
@@ -158,7 +161,6 @@ def open_lobby(request, label):
     try:
         lobby = Lobby.objects.get(label=label)
     except Lobby.DoesNotExist:
-        log.debug('This lobby does not exist')
         messages.info(request, 'This lobby does not exist!')
         return redirect(index)
     rooms = lobby.rooms.order_by(label)
@@ -197,9 +199,10 @@ def new_room(request):
             label = haikunator.haikunate()
             if Room.objects.filter(label=label).exists():
                 continue
-            new_room = Room.objects.create(label=label, lobby_id=cache.get('lobbylabel'))
+            new_room = Room.objects.create(label=label, lobby=Lobby.objects.get(label=cache.get('lobbylabel')))
             log.debug(label)
-    return redirect(chat_room, label=label)
+            log.debug(Room.objects.get(label=label))
+    #return redirect(chat_room, label=label)
 
 def create_rooms(request):
     """
@@ -213,10 +216,7 @@ def create_rooms(request):
         new_room(request)
         itr -= 1
     place_rooms(request)
-    return redirect(open_lobby, label=cache.get('lobbylabel'))
-    #return redirect("lobby/" + cache.get('lobbylabel'))
-    #return HttpResponse(None)
-
+    return redirect(chat_room, label=cache.get('roomlabel'))
 
 def place_rooms(request):
     """
@@ -235,6 +235,9 @@ def place_rooms(request):
                 c_u_r.save()
 
         log.debug(Connected_user_room.objects.values_list().filter(room=n))
+        lob = Lobby.objects.get(label = active_lobby)
+        lob.active = True
+        lob.save()
 
 
 def chat_room(request, label):
@@ -252,11 +255,17 @@ def chat_room(request, label):
     # We want to show the last 50 messages, ordered most-recent-last
     messages = reversed(room.messages.order_by('-timestamp')[:50])
     allmessages = reversed(room.messages.order_by('timestamp'))
+    username = cache.get('loggedIn')
+    try:
+        u = User.objects.get(email=username)
+    except User.DoesNotExist:
+        log.debug('This user does not exist') #throw exception??
 
     return render(request, "chat/room.html", {
         'room': room,
         'messages': messages,
         'allmessages': allmessages,
+        'user': u
         #'lobby': lobby,
     })
 
@@ -299,4 +308,20 @@ def download(request):
     response['Content-Disposition'] = 'attachment; filename="logs.txt"'
     django_file.close()
     return response
+
+
+@receiver(post_save, sender=Lobby)
+def room_redirect(sender, **kwargs):
+    lob = Lobby.objects.get(label=cache.get('lobbylabel'))
+    log.debug(lob)
+    if lob.active == True:
+        #return redirect(chat_room, label=Connected_user_room.objects.get(user=cache.get('LoggedIn')).room)
+        rooms = lob.rooms.all()
+        for room in rooms:
+            try:
+                con = Connected_user_room.objects.get(user=cache.get('loggedIn'), room=room.label)
+            except Connected_user_room.DoesNotExist:
+                continue
+            cache.set('roomlabel', con.room, None)
+            #return redirect(chat_room, label=con.room)
 

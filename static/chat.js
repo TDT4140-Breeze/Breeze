@@ -19,15 +19,26 @@ $(function() {
         )
 
         chat.append(ele)
+        var boundary = document.getElementById("chatboundary");
+        boundary.scrollTop = boundary.scrollHeight;
     };
 
     $("#chatform").on("submit", function(event) {
+        if($('#message').val().replace(/ /g , '') === ''){
+        $("#message").val('').focus();
+        return false;
+        };
+        //else:
+        //alert('bbbb');
+        var usnm = document.getElementById("user").innerHTML;
         var message = {
-            handle: $('#handle').val(),
+            handle: usnm,
             message: $('#message').val(),
         }
         chatsock.send(JSON.stringify(message));
         $("#message").val('').focus();
+        //$("#chatboundary").scrollTop = $("#chatboundary").scrollHeight;
+
         return false;
     });
 });

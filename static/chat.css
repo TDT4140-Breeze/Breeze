@@ -86,7 +86,7 @@ button.accordion {
     transition: 0.4s;
 }
 
-#profilebar li {
+.profilebar li {
     display: inline;
     float: right;
     font-size: 20px;

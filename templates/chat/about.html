@@ -4,8 +4,7 @@
 <h1>Breeze</h1>
 <p class="deck">
  Logged in as {{  userMail   }} <br/>
-    This is your page. Here you can (soon) watch your previous lobbies and chats. <br/>
-    For now, you can only make a new lobby. Try it out!
+    <a href="{% url 'profile' %}">Click here to see your previous lobbies and chats.</a>
 </p>
 
     <form action="{% url 'new_lobby' %}" method="post">
@@ -14,7 +13,6 @@
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Create new lobby">
-
     </form>
 
 

@@ -50,7 +50,7 @@ h2 {
     display: block;
 }
 
-#return_home {
+.return_home {
     margin: 10px;
 
 }
@@ -63,7 +63,7 @@ h2 {
 
 }
 
-.button-primary #home_button {
+.button-primary.home_button {
     display: inline;
     margin: 10px;
     padding:10px 20px;

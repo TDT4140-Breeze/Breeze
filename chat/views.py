@@ -8,7 +8,6 @@ import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User, Message
 from django.contrib import messages
 from django.shortcuts import render
-
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from .forms import LoginForm, lobbyForm, PasswordForm
 from django.db.utils import IntegrityError
@@ -50,14 +49,10 @@ def post_chat(request):
 
 #Shows profile with previous lobbies and chat logs
 def profile(request):
-    email = "test@email.com"
-    cache.set('loggedIn', email, None)
     user = cache.get('loggedIn')
-    user_rooms = Connected_user_room(8, email)
-    user_rooms.save()
-    room_id= Connected_user_room.objects.values_list('room', flat=True).filter(user=user)
-    lobby_id = Lobby.objects.values_list('label', flat=True).filter(owner=user)
-    lobby_topic = Lobby.objects.values_list('topic', flat=True).filter(owner=user)
+    room_id= reversed(Connected_user_room.objects.values_list('room', flat=True).filter(user=user))
+    lobby_id = reversed(Lobby.objects.values_list('label', flat=True).filter(owner=user))
+    lobby_topic = reversed(Lobby.objects.values_list('topic', flat=True).filter(owner=user))
     roomlist = []
     for id in room_id:
         roomlist.append(id)
@@ -66,8 +61,9 @@ def profile(request):
     for id in lobby_id:
         lobbylist.append(id)
     for topic in lobby_topic:
-        lobby_topic_list.append(topic)
-    return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'roomlist': roomlist, 'lobby_topics': lobby_topic_list})
+        if topic != '' or topic is not None:
+            lobby_topic_list.append(topic)
+    return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'roomlist': roomlist, 'lobby_topics': lobby_topic_list, 'user': user})
 
 
 def login(request):
@@ -102,12 +98,6 @@ def login(request):
         form = LoginForm()
         return render(request, "chat/login.html")
     return redirect(open_lobby, label=cache.get('lobbylabel'))
-
-
-
-def logout_user(request):
-    cache.delete('loggedIn')
-    return redirect(index)
 
 
 def change_password(request):
@@ -152,39 +142,37 @@ def new_lobby(request):
 
 def open_lobby(request, label):
     username = cache.get('loggedIn')
+    log.debug(username)
     try:
         u = User.objects.get(email=username)
+        log.debug('Found user:' + str(u))
     except User.DoesNotExist:
         log.debug('This user does not exist') #throw exception??
-
-    #lobby, created = Lobby.objects.get_or_create(label=label)
     try:
         lobby = Lobby.objects.get(label=label)
+        log.debug('found lobby'+str(lobby))
     except Lobby.DoesNotExist:
         messages.info(request, 'This lobby does not exist!')
         return redirect(index)
     rooms = lobby.rooms.order_by(label)
-
     c_u, made = Connected_user.objects.get_or_create(lobby=label, user=u.email)
-    log.debug(made)
     if made:
         c_u.save()
-    log.debug('Connected users: ' + str(Connected_user.objects.filter(lobby=label).count()))
     f = Connected_user.objects.filter(lobby=label).count()
     lobby.connected_users = f
     lobby.save()
     owner = False
-    log.debug(lobby.owner)
-    log.debug(username)
-    log.debug(str(lobby.owner) == str(username))
     if str(lobby.owner) == str(username):
         owner = True
     log.debug(owner)
+    started = lobby.active
+    log.debug('uuuuuuuuuuuuuuuuuuuuuuu' + str(started))
 
     return render(request, "chat/lobby.html", {
         'lobby': lobby,
         'rooms': rooms,
-        'owner': owner
+        'owner': owner,
+        'started': started
     })
 
 
@@ -200,14 +188,15 @@ def new_room(request):
             if Room.objects.filter(label=label).exists():
                 continue
             new_room = Room.objects.create(label=label, lobby=Lobby.objects.get(label=cache.get('lobbylabel')))
-            log.debug(label)
-            log.debug(Room.objects.get(label=label))
+        #    log.debug(label)
+        #    log.debug(Room.objects.get(label=label))
     #return redirect(chat_room, label=label)
 
 def create_rooms(request):
     """
     Create x amount of new rooms based on currently connected users
     """
+    log.debug(cache.get('loggedIn'))
     lob = Lobby.objects.get(label=cache.get('lobbylabel'))
     users = lob.connected_users
     roomCount = math.floor(users/5) + 1
@@ -216,7 +205,24 @@ def create_rooms(request):
         new_room(request)
         itr -= 1
     place_rooms(request)
-    return redirect(chat_room, label=cache.get('roomlabel'))
+    lob = Lobby.objects.get(label=cache.get('lobbylabel'))
+
+    log.debug('aaaaaaaaaaaaaaaaaaaaaaaa' + str(lob.active))
+    log.debug(lob.rooms)
+    rooms = list(Room.objects.values_list('label', flat=True).filter(lobby=lob.label))
+    log.debug(rooms)
+
+
+    if str(lob.owner) == cache.get('loggedIn'):
+        return render(request, "chat/lobby.html", {
+        'lobby': lob,
+        'rooms': rooms,
+        'owner': lob.owner,
+        'started': lob.active,
+        'roomCount': roomCount
+    })
+    else:
+        return redirect(chat_room, label=cache.get('roomlabel'))
 
 def place_rooms(request):
     """
@@ -225,7 +231,11 @@ def place_rooms(request):
     active_lobby = cache.get('lobbylabel')
     userlist = Connected_user.objects.values_list('user', flat=True).filter(lobby=active_lobby)
     log.debug(userlist)
+    #userlist.difference(Lobby.objects.get(label=active_lobby).owner)
+    log.debug(userlist)
     userlist = list(userlist)
+    userlist.remove(str(Lobby.objects.get(label=active_lobby).owner))
+    log.debug(userlist)
     random.shuffle(userlist)
     roomList = list(Room.objects.values_list('label', flat=True).filter(lobby=active_lobby))
     for n in roomList:
@@ -256,6 +266,10 @@ def chat_room(request, label):
     messages = reversed(room.messages.order_by('-timestamp')[:50])
     allmessages = reversed(room.messages.order_by('timestamp'))
     username = cache.get('loggedIn')
+    log.debug(Connected_user_room.objects.values_list().filter(room=label))
+    log.debug('^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    userlist = list(Connected_user_room.objects.values_list('user', flat=True).filter(room=label))
+    log.debug(userlist)
     try:
         u = User.objects.get(email=username)
     except User.DoesNotExist:
@@ -265,7 +279,8 @@ def chat_room(request, label):
         'room': room,
         'messages': messages,
         'allmessages': allmessages,
-        'user': u
+        'login': u,
+        'users': userlist
         #'lobby': lobby,
     })
 
@@ -313,7 +328,6 @@ def download(request):
 @receiver(post_save, sender=Lobby)
 def room_redirect(sender, **kwargs):
     lob = Lobby.objects.get(label=cache.get('lobbylabel'))
-    log.debug(lob)
     if lob.active == True:
         #return redirect(chat_room, label=Connected_user_room.objects.get(user=cache.get('LoggedIn')).room)
         rooms = lob.rooms.all()
@@ -324,4 +338,3 @@ def room_redirect(sender, **kwargs):
                 continue
             cache.set('roomlabel', con.room, None)
             #return redirect(chat_room, label=con.room)
-

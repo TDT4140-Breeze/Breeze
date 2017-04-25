@@ -11,8 +11,9 @@
     {% endfor %}
 </ul>
 {% endif %}
-    <p>Here you can see your previous lobbies and use them as templates. You can also see your chat logs and change your password. </p>
-    <ul class="profilebar">
+    <p>Here you can see topics from your previous lobbies and your chat logs. You can also change your password. </p>
+    <ul id="profilebar">
+
     <li>
         <a class="button button-primary" class="home_button" href="{% url 'logout' %}" class="return_home">Log out</a>
     </li>
@@ -20,10 +21,10 @@
     <h4>Previous lobbies</h4>
     <!-- Previous lobbies the user has created-->
     <table>
-    <th>Label</th>
-    {% for lobby in lobbylist %}
+    <th>Topic</th>
+    {% for topic in lobby_topics %}
             <tr>
-            <td><a href="/lobby/{{ lobby }}">{{ lobby }}</a></td>
+            <td>{{ topic }}</td>
             </tr>
     {% endfor %}
     </table>

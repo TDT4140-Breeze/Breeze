@@ -50,7 +50,7 @@ h2 {
     display: block;
 }
 
-#return_home {
+.return_home {
     margin: 10px;
 
 }
@@ -63,7 +63,7 @@ h2 {
 
 }
 
-.button-primary #home_button {
+.button-primary.home_button {
     display: inline;
     margin: 10px;
     padding:10px 20px;
@@ -80,6 +80,8 @@ div.accordion_form {
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     width: 40%;
+    border: 0px solid;
+    border-radius: 2px;
 }
 
 button.accordion {
@@ -111,6 +113,23 @@ button.accordion:after {
 
 button.accordion.active:after {
     content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+#chatboundary {
+     overflow-y:scroll;
+     height:450px;
+     width:68%;
+     background:rgba(255, 255, 255, 0.35);
+     padding-left:30px;
+
+}
+
+#users {
+    background:rgba(255, 255, 255, 0.35);
+    width:15%;
+    float:right;
+    margin-right: 10%;
+    padding:8px;
 }
 
 .lobbyLink {

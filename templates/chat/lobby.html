@@ -15,16 +15,36 @@
     <li><p id="lobbyHeader">Code: {{ lobby.label }}</p></li>
     <li><p id="lobbyHeader">Topic: {{ lobby.topic }}</p></li>
 </ul>
-{% if owner %}
+{% if started and owner %}
+<p>
+     Here you can observe all currently running chat rooms.
+</p>
+    <ul>
+    {% for room in rooms %}
+    <li><a href="/{{room}}" target="_blank">{{ room }}</a></li>
+    {% endfor %}
+    </ul>
+
+
+{% elif started %}
+<p>
+    The lobby is underway.
+</p>
+{% elif owner %}
 <p id="startButton">
     <a class="button button-primary" href="{% url 'new_room' %}" >
         Start the lobby
     </a>
 </p>
+
 {% else %}
 <p>
     Please wait patiently for the lobby to start
 </p>
+{% endif %}
+
+{% if owner and roomCount %}
+    {{ roomCount }}
 {% endif %}
 
 {% endblock content %}

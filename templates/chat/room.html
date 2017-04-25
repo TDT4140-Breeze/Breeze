@@ -4,7 +4,7 @@
 {% load staticfiles %}
 <h1>{{ room.label }}</h1>
 <p class="quiet">
-    Welcome to the chatroom, <span id="user">{{ user.email }}</span>
+    Welcome to the chatroom, <span id="user">{{ login.email }}</span>
 
     <br/>
     This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected
@@ -12,14 +12,19 @@
     The topic for this discussion is: {{ room.lobby.topic }}
 
 </p>
-        <!--
-<p>
-    <label for="handle">Your name:</label>
-    <input id="handle" type="text" placeholder="handle">
-</p>
-        -->
 <form id="chatform">
-    <div id="chatboundary" style="overflow-y:scroll; height:450px;">
+    <div id="users">
+    <table>
+        <tbody><p>Connected users:</p>
+        {% for username in users %}
+        <tr>
+            <td>{{ username }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+        </div>
+    <div id="chatboundary">
     <table id="chat">
         <tbody>
             {% for message in messages %}
@@ -32,6 +37,7 @@
         </tbody>
         </table>
         </div>
+
         <table>
             <tr>
                 <td>Say something:</td>

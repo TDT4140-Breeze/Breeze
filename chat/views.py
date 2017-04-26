@@ -47,7 +47,7 @@ def lobby(request):
 def post_chat(request):
     return render(request, "chat/post_chat.html")
 
-#Shows profile with previous lobbies and chat logs
+# Shows profile with previous lobbies and chat logs
 def profile(request):
     user = cache.get('loggedIn')
     room_id= reversed(Connected_user_room.objects.values_list('room', flat=True).filter(user=user))
@@ -67,6 +67,9 @@ def profile(request):
 
 
 def login(request):
+    """
+    Logs in the user and redirects to correct page
+    """
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -101,6 +104,9 @@ def login(request):
 
 
 def change_password(request):
+    """
+    Change password form in profile 
+    """
     user_email = cache.get('loggedIn')
     user = User(email=user_email)
     if request.method == 'POST':
@@ -119,6 +125,9 @@ def change_password(request):
 
 
 def new_lobby(request):
+    """
+    Creates new lobby: 
+    """
     a = User.objects.get(email=cache.get('loggedIn'))
     if request.method == 'POST':
         log.debug("ok")
@@ -140,7 +149,11 @@ def new_lobby(request):
 
     return redirect(open_lobby, label=label)
 
+
 def open_lobby(request, label):
+    """
+    Opens a lobby that has been created
+    """
     username = cache.get('loggedIn')
     log.debug(username)
     try:
@@ -192,6 +205,7 @@ def new_room(request):
         #    log.debug(Room.objects.get(label=label))
     #return redirect(chat_room, label=label)
 
+
 def create_rooms(request):
     """
     Create x amount of new rooms based on currently connected users
@@ -212,7 +226,6 @@ def create_rooms(request):
     rooms = list(Room.objects.values_list('label', flat=True).filter(lobby=lob.label))
     log.debug(rooms)
 
-
     if str(lob.owner) == cache.get('loggedIn'):
         return render(request, "chat/lobby.html", {
         'lobby': lob,
@@ -223,6 +236,7 @@ def create_rooms(request):
     })
     else:
         return redirect(chat_room, label=cache.get('roomlabel'))
+
 
 def place_rooms(request):
     """
@@ -298,13 +312,20 @@ def index(request):
         'loggedIn': loggedIn
     })
 
+
 def logout(request):
+    """
+    Logs out the cached user 
+    """
     cache.delete('loggedIn')
     messages.info(request, 'Successfully logged out')
     return redirect(index)
 
 
 def download(request):
+    """
+    Takes in room label and gives .txt file with chat log 
+    """
     open('logs.txt', 'w').close() # empties logs.txt
     label = HttpRequest.get_full_path(request)[11:]
     room = Room.objects.get(label=label)
@@ -327,6 +348,9 @@ def download(request):
 
 @receiver(post_save, sender=Lobby)
 def room_redirect(sender, **kwargs):
+    """
+    Redirects user to appropriate room.
+    """
     lob = Lobby.objects.get(label=cache.get('lobbylabel'))
     if lob.active == True:
         #return redirect(chat_room, label=Connected_user_room.objects.get(user=cache.get('LoggedIn')).room)

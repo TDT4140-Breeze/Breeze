@@ -99,6 +99,9 @@ def login(request):
         elif(form.cleaned_data.get('user_password') != form.cleaned_data.get('password_retype')):
             messages.info(request, "Your passwords don't match!")
             return render(request, 'chat/login.html')
+        else:
+            messages.info(request, "You've entered something wrong!")
+            return render(request, 'chat/login.html')
 
 
     # if a GET (or any other method) we'll create a blank form

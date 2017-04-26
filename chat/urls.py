@@ -15,6 +15,6 @@ urlpatterns = [
     url(r'^new/$', views.new_lobby, name='new_lobby'),
     url(r'^lobby/(?P<label>[0-9]+)/$', views.open_lobby, name='open_lobby'),
     url(r'^download/$', views.download, name='download'),
+    url(r'^close_lobby/$', views.close_lobby, name='close_lobby'),
     url(r'^(?P<label>[\w-]{,50})/$', views.chat_room, name='chat_room'),
-
 ]

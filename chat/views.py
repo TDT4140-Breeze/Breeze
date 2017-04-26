@@ -1,5 +1,4 @@
 import random
-from django.template import RequestContext
 from django.db import transaction
 from django.shortcuts import render, redirect, render_to_response
 import haikunator
@@ -8,16 +7,14 @@ import math
 from .models import Room, Lobby, Connected_user_room, Connected_user, User, Message
 from django.contrib import messages
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest
 from .forms import LoginForm, lobbyForm, PasswordForm
 from django.db.utils import IntegrityError
 from django.core.files import File
-from django.views.static import serve
-import logging
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-log = logging.getLogger(__name__)
+#log = logging.getLogger(__name__)  # logger used for debugging, development only
 
 
 def about(request, user):
@@ -26,15 +23,20 @@ def about(request, user):
     })
 
 
+# caches the lobby the user wants to go to, and returns them to either login page or the lobby
 def saveLobby(request):
     if request.POST['code'] == "Your code here" or request.POST['code'] == "":
         return render(request, "chat/index.html")
     if 'code' in request.POST:
             code = request.POST['code']
-            log.debug(code)
+            try:
+                lobby = Lobby.objects.get(label=code)
+            except Lobby.DoesNotExist:
+                messages.info(request, 'This lobby does not exist!')
+                return redirect(index)
             cache.set('lobbylabel', code, None)
             cache.set('lobbydirect', True)
-    if cache.get('loggedIn') != None:
+    if cache.get('loggedIn') is None:
         return redirect(open_lobby, label=cache.get('lobbylabel'))
     else:
         return render(request, "chat/login.html")
@@ -47,7 +49,8 @@ def lobby(request):
 def post_chat(request):
     return render(request, "chat/post_chat.html")
 
-#Shows profile with previous lobbies and chat logs
+
+# shows profile with previous lobbies and chat logs
 def profile(request):
     user = cache.get('loggedIn')
     room_id= reversed(Connected_user_room.objects.values_list('room', flat=True).filter(user=user))
@@ -63,7 +66,11 @@ def profile(request):
     for topic in lobby_topic:
         if topic != '' or topic is not None:
             lobby_topic_list.append(topic)
-    return render(request, "chat/profile.html", {'lobbylist': lobbylist, 'roomlist': roomlist, 'lobby_topics': lobby_topic_list, 'user': user})
+    return render(request, "chat/profile.html", {
+        'lobbylist': lobbylist,
+        'roomlist': roomlist,
+        'lobby_topics': lobby_topic_list,
+        'user': user})
 
 
 def login(request):
@@ -73,18 +80,16 @@ def login(request):
         form = LoginForm(request.POST, request.FILES)
         # check whether it's valid:
         if form.is_valid() and form.cleaned_data.get('user_password') == form.cleaned_data.get('password_retype'):
-
-            # redirect to a new URL:
             try:
                 u, created = User.objects.get_or_create(email=form.cleaned_data['user_email'], password=form.cleaned_data['user_password'])
             except IntegrityError:
                 messages.info(request, 'Wrong password')
                 return render(request, 'chat/login.html')
             cache.set('loggedIn', form.cleaned_data['user_email'], None)
-            if cache.get('lobbydirect'):    #Redirects user to a lobby
+            if cache.get('lobbydirect'):    # redirects user to a lobby
                 cache.delete('lobbydirect')
                 return redirect(open_lobby, label=cache.get('lobbylabel'))
-            else:                           #Redirect user to their 'about' page
+            else:                           # redirect user to their 'about' page
                 return render(request, "chat/about.html",{
                     'userMail': cache.get('loggedIn')
                     })
@@ -108,11 +113,10 @@ def change_password(request):
         form = PasswordForm(request.POST, request.FILES)
         # checks whether it's valid:
         if form.is_valid() and form.cleaned_data.get('user_password') == form.cleaned_data.get('password_retype'):
-            #u, created = User.objects.update_or_create(email=user_email, defaults={'password': form.cleaned_data.get('user_password')},)
             user.password = form.cleaned_data['user_password']
             user.save()
             messages.info(request, "Password successfully changed!")
-        elif (form.cleaned_data.get('user_password') != form.cleaned_data.get('password_retype')):
+        elif form.cleaned_data.get('user_password') != form.cleaned_data.get('password_retype'):
             messages.info(request, "Your passwords don't match!")
             return redirect(profile)
     return redirect(profile)
@@ -121,10 +125,7 @@ def change_password(request):
 def new_lobby(request):
     a = User.objects.get(email=cache.get('loggedIn'))
     if request.method == 'POST':
-        log.debug("ok")
         form = lobbyForm(request.POST, request.FILES)
-        log.debug(form.is_valid())
-        log.debug(form.cleaned_data.get('topic'))
         if form.is_valid():
             topic = str(form.lobby_topic())
     else:
@@ -132,25 +133,24 @@ def new_lobby(request):
     new_lobby = None
     while not new_lobby:
         with transaction.atomic():
-            label = random.randint(10, 999999)
-            cache.set('lobbylabel', label, None)
+            label = random.randint(10, 999999)  # creates a lobby with label between 10 and 999999
+            cache.set('lobbylabel', label, None)    # if it already exists, try again
             if Lobby.objects.filter(label=label).exists():
                 continue
             new_lobby = Lobby.objects.create(label=label, topic=topic, owner=a, active=False)
 
     return redirect(open_lobby, label=label)
 
+
+# connects a user to their desired lobby and redirects them there
 def open_lobby(request, label):
     username = cache.get('loggedIn')
-    log.debug(username)
     try:
         u = User.objects.get(email=username)
-        log.debug('Found user:' + str(u))
     except User.DoesNotExist:
-        log.debug('This user does not exist') #throw exception??
+        return      # should throw, however there is no sensible way for anyone to reach this piece of code
     try:
         lobby = Lobby.objects.get(label=label)
-        log.debug('found lobby'+str(lobby))
     except Lobby.DoesNotExist:
         messages.info(request, 'This lobby does not exist!')
         return redirect(index)
@@ -164,9 +164,7 @@ def open_lobby(request, label):
     owner = False
     if str(lobby.owner) == str(username):
         owner = True
-    log.debug(owner)
     started = lobby.active
-    log.debug('uuuuuuuuuuuuuuuuuuuuuuu' + str(started))
 
     return render(request, "chat/lobby.html", {
         'lobby': lobby,
@@ -176,10 +174,8 @@ def open_lobby(request, label):
     })
 
 
+    # create a new chat room
 def new_room(request):
-    """
-    Randomly create a new room, and redirect to it.
-    """
     new_room = None
     while not new_room:
         with transaction.atomic():
@@ -192,11 +188,9 @@ def new_room(request):
         #    log.debug(Room.objects.get(label=label))
     #return redirect(chat_room, label=label)
 
+
+# create x amounts of chat rooms, based on the currently connected users
 def create_rooms(request):
-    """
-    Create x amount of new rooms based on currently connected users
-    """
-    log.debug(cache.get('loggedIn'))
     lob = Lobby.objects.get(label=cache.get('lobbylabel'))
     users = lob.connected_users
     roomCount = math.floor(users/5) + 1
@@ -206,13 +200,7 @@ def create_rooms(request):
         itr -= 1
     place_rooms(request)
     lob = Lobby.objects.get(label=cache.get('lobbylabel'))
-
-    log.debug('aaaaaaaaaaaaaaaaaaaaaaaa' + str(lob.active))
-    log.debug(lob.rooms)
     rooms = list(Room.objects.values_list('label', flat=True).filter(lobby=lob.label))
-    log.debug(rooms)
-
-
     if str(lob.owner) == cache.get('loggedIn'):
         return render(request, "chat/lobby.html", {
         'lobby': lob,
@@ -224,18 +212,13 @@ def create_rooms(request):
     else:
         return redirect(chat_room, label=cache.get('roomlabel'))
 
+
+# in coalition with the above method, places chat users into randomized rooms.
 def place_rooms(request):
-    """
-    In coalition with the above method, places chat users into randomized rooms.
-    """
     active_lobby = cache.get('lobbylabel')
     userlist = Connected_user.objects.values_list('user', flat=True).filter(lobby=active_lobby)
-    log.debug(userlist)
-    #userlist.difference(Lobby.objects.get(label=active_lobby).owner)
-    log.debug(userlist)
     userlist = list(userlist)
     userlist.remove(str(Lobby.objects.get(label=active_lobby).owner))
-    log.debug(userlist)
     random.shuffle(userlist)
     roomList = list(Room.objects.values_list('label', flat=True).filter(lobby=active_lobby))
     for n in roomList:
@@ -243,54 +226,33 @@ def place_rooms(request):
             if len(userlist) > 0:
                 c_u_r = Connected_user_room.objects.create(room=n, user=userlist.pop())
                 c_u_r.save()
-
-        log.debug(Connected_user_room.objects.values_list().filter(room=n))
         lob = Lobby.objects.get(label = active_lobby)
         lob.active = True
         lob.save()
 
 
+# display the chat room, with messages in order from most recent to last
 def chat_room(request, label):
-    """
-    Room view - show the room, with latest messages.
+    room = Room.objects.get(label=label)
 
-    The template for this view has the WebSocket business to send and stream
-    messages, so see the template for where the magic happens.
-    """
-    # If the room with the given label doesn't exist, automatically create it
-    # upon first visit (a la etherpad).
-    room, created = Room.objects.get_or_create(label=label)
-
-
-    # We want to show the last 50 messages, ordered most-recent-last
     messages = reversed(room.messages.order_by('-timestamp')[:50])
     allmessages = reversed(room.messages.order_by('timestamp'))
     username = cache.get('loggedIn')
-    log.debug(Connected_user_room.objects.values_list().filter(room=label))
-    log.debug('^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     userlist = list(Connected_user_room.objects.values_list('user', flat=True).filter(room=label))
-    log.debug(userlist)
     try:
         u = User.objects.get(email=username)
     except User.DoesNotExist:
-        log.debug('This user does not exist') #throw exception??
-
+        return
     return render(request, "chat/room.html", {
         'room': room,
         'messages': messages,
         'allmessages': allmessages,
         'login': u,
         'users': userlist
-        #'lobby': lobby,
     })
 
 
 def index(request):
-    """
-    Landing page
-
-    Enter code from lecturer or login to create own lobby
-    """
     loggedIn = False
     if cache.get('loggedIn') != None:
         loggedIn = True
@@ -298,38 +260,44 @@ def index(request):
         'loggedIn': loggedIn
     })
 
+
 def logout(request):
     cache.delete('loggedIn')
     messages.info(request, 'Successfully logged out')
     return redirect(index)
 
 
+# downloads all the chatlogs from a specific chat room as logs.txt
 def download(request):
     open('logs.txt', 'w').close() # empties logs.txt
     label = HttpRequest.get_full_path(request)[11:]
     room = Room.objects.get(label=label)
-
     allmessages = reversed(room.messages.order_by('-timestamp'))
-
     messages = []
     for message in allmessages:
         messages.append(message)
-
     filecontent = open('logs.txt', 'r+')
     django_file = File(filecontent)
     for message in messages:
-        django_file.write(message.formatted_timestamp + " - " + message.handle + ": " + message.message + "\n")
+        django_file.write(message.formatted_timestamp + " - " + message.handle + ": " + message.message + "\n") # writes each message
     response = HttpResponse(django_file, content_type='text')
     response['Content-Disposition'] = 'attachment; filename="logs.txt"'
     django_file.close()
     return response
 
 
+def close_lobby(request):
+    lobby = Lobby.objects.get(label=cache.get('lobbylabel'))
+    lobby.active = False
+    lobby.save()
+    return redirect(open_lobby, label=cache.get('lobbylabel'))
+
+
+# redirects users to their chat rooms once a lobby is launched
 @receiver(post_save, sender=Lobby)
 def room_redirect(sender, **kwargs):
     lob = Lobby.objects.get(label=cache.get('lobbylabel'))
     if lob.active == True:
-        #return redirect(chat_room, label=Connected_user_room.objects.get(user=cache.get('LoggedIn')).room)
         rooms = lob.rooms.all()
         for room in rooms:
             try:
@@ -337,4 +305,11 @@ def room_redirect(sender, **kwargs):
             except Connected_user_room.DoesNotExist:
                 continue
             cache.set('roomlabel', con.room, None)
-            #return redirect(chat_room, label=con.room)
+
+
+# updates the users' context once a lobby is over, so they cannot send any more messages
+@receiver(post_save, sender=Lobby)
+def lobby_closed(sender, **kwargs):
+    lob = Lobby.objects.get(label=cache.get('lobbylabel'))
+    if lob.active == False and str(lob.owner) != cache.get('loggedIn'):
+        redirect(chat_room, label=cache.get('roomlabel'))

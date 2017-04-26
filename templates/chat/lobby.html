@@ -9,13 +9,14 @@
     <code>{{ lobby.connected_users  }}</code>
 </p>
 
-
 <ul id="lobbybar">
     <li><p id="lobbyHeader">People connected: {{ lobby.connected_users }}</p></li>
     <li><p id="lobbyHeader">Code: {{ lobby.label }}</p></li>
     <li><p id="lobbyHeader">Topic: {{ lobby.topic }}</p></li>
 </ul>
-{% if started and owner %}
+
+{% if owner and roomCount and started %}
+
 <p>
      Here you can observe all currently running chat rooms.
 </p>
@@ -24,12 +25,15 @@
     <li><a href="/{{room}}" target="_blank">{{ room }}</a></li>
     {% endfor %}
     </ul>
-
+    <a class="button button-primary" href="{% url 'close_lobby' %}">
+        Close the lobby
+    </a>
 
 {% elif started %}
 <p>
     The lobby is underway.
 </p>
+
 {% elif owner %}
 <p id="startButton">
     <a class="button button-primary" href="{% url 'new_room' %}" >
@@ -41,6 +45,7 @@
 <p>
     Please wait patiently for the lobby to start
 </p>
+
 {% endif %}
 
 {% if owner and roomCount %}

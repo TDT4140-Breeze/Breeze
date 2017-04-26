@@ -1,5 +1,4 @@
-# Breeze [![Build Status](https://travis-ci.org/TDT4140-Breeze/Breeze.svg?branch=master)](https://travis-ci.org/TDT4140-Breeze/Breeze)
-
+# Breeze 
 ## Installation
 - Clone repository from Github
 - Install and configure an empty postgreSQL database

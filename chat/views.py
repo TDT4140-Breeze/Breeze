@@ -53,6 +53,9 @@ def post_chat(request):
 # shows profile with previous lobbies and chat logs
 def profile(request):
     user = cache.get('loggedIn')
+    if user is None:
+        messages.info(request, 'You are not logged in')
+        return redirect(index)
     room_id= reversed(Connected_user_room.objects.values_list('room', flat=True).filter(user=user))
     lobby_id = reversed(Lobby.objects.values_list('label', flat=True).filter(owner=user))
     lobby_topic = reversed(Lobby.objects.values_list('topic', flat=True).filter(owner=user))

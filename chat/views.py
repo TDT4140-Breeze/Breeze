@@ -16,6 +16,7 @@ from django.dispatch import receiver
 
 #log = logging.getLogger(__name__)  # logger used for debugging, development only
 
+
 def about(request, user):
     return render(request, "chat/about.html",{
         'userMail': user

@@ -53,17 +53,9 @@
 
 </form>
 
-
 <a href="{% url 'download' %}?{{ room.label }}" class="lobbyLink">Download chat logs of this conversation</a>
 <a href="{% url 'profile' %}" class="lobbyLink">Go to profile page</a>
 <a href="{% url 'post_chat' %}" class="post_chat">Leave chat</a>
-
-
-
-<h4>TODO:</h4>
-<ul>
-    <li>Show connected users</li>
-</ul>
 
 {% endblock content %}
 

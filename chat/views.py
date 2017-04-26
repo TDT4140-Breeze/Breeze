@@ -105,6 +105,7 @@ def login(request):
     return redirect(open_lobby, label=cache.get('lobbylabel'))
 
 
+# form to change password in your profile
 def change_password(request):
     user_email = cache.get('loggedIn')
     user = User(email=user_email)
@@ -122,6 +123,7 @@ def change_password(request):
     return redirect(profile)
 
 
+# generates a new lobby
 def new_lobby(request):
     a = User.objects.get(email=cache.get('loggedIn'))
     if request.method == 'POST':
@@ -261,6 +263,7 @@ def index(request):
     })
 
 
+# logs out the cached user
 def logout(request):
     cache.delete('loggedIn')
     messages.info(request, 'Successfully logged out')

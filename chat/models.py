@@ -52,14 +52,14 @@ class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages')
     handle = models.SlugField()
     message = models.TextField(max_length=140)
-    timestamp = models.TimeField(default=timezone.localtime(timezone.now()), db_index=True)
+    timestamp = models.TimeField(default=timezone.now, db_index=True)
 
     def __str__(self):
         return str(self.timestamp[0:8]) + " " + str(self.handle) + ": " + str(self.message)
 
     @property
     def formatted_timestamp(self):
-        return self.timestamp.strftime('%H:%M')
+        return self.timestamp.strftime('%H:%M:%S')
 
     def as_dict(self):
         return {'handle': self.handle, 'message': self.message, 'timestamp': self.formatted_timestamp}

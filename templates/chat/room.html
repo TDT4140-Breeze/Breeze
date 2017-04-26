@@ -4,7 +4,7 @@
 {% load staticfiles %}
 <h1>{{ room.label }}</h1>
 <p class="quiet">
-    Welcome to the chatroom, <span id="user">{{ login.email }}</span>
+    Welcome to the chat room, <span id="user">{{ login.email }}</span>
 
     <br/>
     This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected

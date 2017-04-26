@@ -14,6 +14,7 @@
 
 <form action="/lobbyredirect/" method="post">
     {% csrf_token %}
+
     <input name="code" onfocus="if (this.value=='Your code here') this.value = ''" type="text" value="Your code here">
     <input type="submit" value="->">
 </form>

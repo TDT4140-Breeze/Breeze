@@ -1,5 +1,6 @@
 body {
     padding-top: 4em;
+    background-image: url("mooning.png");
 }
 
 p.deck {
@@ -13,5 +14,144 @@ p.deck a {
 
 .quiet {
     font-size: 90%;
-    color: #999;
+    color: #222222;
+}
+
+#topic {
+    display: inline;
+}
+
+#code {
+    display: inline;
+}
+
+h2 {
+    font-size: 25px;
+    display: inline;
+}
+
+#lobbyTableHeader {
+    font-size: 20px;
+}
+
+#lobbybar li {
+    display: inline;
+    float: right;
+    padding-right: 100px;
+    font-size: 20px;
+}
+
+#startLobby {
+    position: relative;
+    float: left;
+}
+
+#startLobby {
+    display: block;
+}
+
+.return_home {
+    margin: 10px;
+
+}
+
+#save {
+    display: inline;
+    margin: 10px;
+    color: #3d78fd;
+    border: 1px solid #333333;
+
+}
+
+.button-primary.home_button {
+    display: inline;
+    margin: 10px;
+    padding:10px 20px;
+}
+
+#post_header {
+    font-size: 35px;
+    font-weight: 600;
+}
+
+div.accordion_form {
+    position: relative;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    width: 40%;
+    border: 0px solid;
+    border-radius: 2px;
+}
+
+button.accordion {
+    transition: 0.4s;
+}
+
+input.submit {
+    display: block;
+    width: 40%;
+    border: 1px solid;
+    border-radius: 4px;
+}
+
+input.logout {
+    border: 1px solid;
+    border-radius: 4px;
+}
+
+button.accordion:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    margin-left: 5px;
+}
+
+button.accordion.active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+#chatboundary {
+     overflow-y:scroll;
+     height:450px;
+     width:68%;
+     background:rgba(255, 255, 255, 0.35);
+     padding-left:30px;
+
+}
+
+#users {
+    background:rgba(255, 255, 255, 0.35);
+    width:15%;
+    float:right;
+    margin-right: 10%;
+    padding:8px;
+}
+
+.lobbyLink {
+    display: block;
+}
+
+#navbar {
+    list-style-type: none;
+    margin-left: 15%;
+    padding: 0;
+    overflow: hidden;
+    width: 80%;
+}
+
+#navbar li {
+    float: left;
+}
+
+#navbar a {
+    display: block;
+    color: black;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#navbar li a:hover {
+    background-color: rgba(3, 13, 17, 0.34);
 }

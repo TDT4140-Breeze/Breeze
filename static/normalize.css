@@ -265,6 +265,7 @@ textarea {
 
 button {
   overflow: visible;
+  border: 1px solid #2e2e2e;
 }
 
 /**
@@ -293,6 +294,7 @@ input[type="reset"],
 input[type="submit"] {
   -webkit-appearance: button; /* 2 */
   cursor: pointer; /* 3 */
+  border: 1px solid #333333;
 }
 
 /**

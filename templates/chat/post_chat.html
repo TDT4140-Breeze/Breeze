@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 id="post_header">Thanks for using Breeze</h1>
+    <p>Save your chat log or return to the home page.</p>
+    <a class="button button-primary" class="home_button" href="{% url 'index' %}" class="return_home">Home page</a>
+    <a class="button button-primary" class="home_button" href="{% url 'profile' %}" class="return_home">Your profile</a>
+
+{% endblock content %}

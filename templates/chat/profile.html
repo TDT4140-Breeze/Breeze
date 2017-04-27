@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+    <h1>Your profile</h1>
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+    <p>Here you can see topics from your previous lobbies and your chat logs. You can also change your password. </p>
+    <button class="accordion">Change password</button>
+    <div class="accordion_form">
+        <form action="/change_password/" method="post">
+            <label for="user_password">New password:</label>
+            <input id="user_password" type="password" name="user_password" value="">
+            <label for="password_retype">Please reenter password:</label>
+            <input id="password_retype" type="password" name="password_retype" value="">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Apply" class="submit" name="submit">
+        </form>
+    </div>
+    <h4>Previous lobbies</h4>
+    <!-- Previous lobbies the user has created-->
+    <button class="accordion">Show lobbies</button>
+    <div class="accordion_form">
+    <table>
+    <th>Topic</th>
+    {% for topic in lobby_topics %}
+            <tr>
+            <td>{{ topic }}</td>
+            </tr>
+    {% endfor %}
+    </table>
+    </div>
+
+
+    <h4>Chat logs</h4>
+    <!-- Shows download links to chat logs from previous chats-->
+    <button class="accordion">Show logs</button>
+    <div class="accordion_form">
+    <table>
+    <th>Room</th>
+    <tr>
+        {% for room in roomlist %}
+            <td><a href="{% url 'download' %}?{{ room }}">{{ room }}</a></td>
+    </tr>
+    <tr>
+        {% endfor %}
+    </tr>
+    </table>
+    </div>
+
+
+{% endblock content %}
+
+{% block afterbody %}
+    <script type="text/javascript" src='{% static "jquery-1.12.1.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "accordion.js" %}'></script>
+{% endblock afterbody %}

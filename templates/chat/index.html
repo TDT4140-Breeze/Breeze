@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1> Breeze </h1>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+<form action="/lobbyredirect/" method="post">
+    {% csrf_token %}
+
+    <input name="code" onfocus="if (this.value=='Your code here') this.value = ''" type="text" value="Your code here">
+    <input type="submit" value="->">
+</form>
+
+{% if not loggedIn %}
+<div>
+    <p> Already a user? Or new here? </p>
+    <p>
+        <a class="button button-primary" href="{% url 'login' %}">
+            Log in/Register
+        </a>
+    </p>
+</div>
+{% endif %}
+
+{% if loggedIn %}
+<p>You are logged in.</p>
+<p>
+<a class="button button-primary" href="{% url 'logout' %}">
+    logout
+    </a>
+    </p>
+{% endif %}
+
+{% endblock content %}

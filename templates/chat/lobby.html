@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<h1>{{ lobby.label }}</h1>
+<p class="quiet">
+    Welcome to the lobby
+    <code>{{ lobby.connected_users  }}</code>
+</p>
+
+<ul id="lobbybar">
+    <li><p id="lobbyHeader">People connected: {{ lobby.connected_users }}</p></li>
+    <li><p id="lobbyHeader">Code: {{ lobby.label }}</p></li>
+    <li><p id="lobbyHeader">Topic: {{ lobby.topic }}</p></li>
+</ul>
+
+{% if owner and started %}
+
+<p>
+     Here you can observe all currently running chat rooms.
+</p>
+    <ul>
+    {% for room in rooms %}
+    <li><a href="/{{room}}" target="_blank">{{ room }}</a></li>
+    {% endfor %}
+    </ul>
+    <a class="button button-primary" href="{% url 'close_lobby' %}">
+        Close the lobby
+    </a>
+
+{% elif started %}
+<p>
+    The lobby is underway.
+</p>
+
+{% elif owner %}
+<p id="startButton">
+    <a class="button button-primary" href="{% url 'new_room' %}" >
+        Start the lobby
+    </a>
+</p>
+
+{% else %}
+<p>
+    Please wait patiently for the lobby to start
+</p>
+
+{% endif %}
+
+{% if owner and roomCount %}
+    {{ roomCount }}
+{% endif %}
+
+{% endblock content %}
+
+{% block afterbody %}
+<script type="text/javascript" src='{% static "jquery-1.12.1.min.js" %}'></script>
+<script type="text/javascript" src='{% static "reconnecting-websocket.min.js" %}'></script>
+<script type="text/javascript" src='{% static "chat.js" %}'></script>
+{% endblock afterbody %}

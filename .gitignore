@@ -12,7 +12,7 @@ tests/coverage_html/
 tests/.coverage
 build/
 tests/report/
-
+*/migrations/*
 # Sensitive Data
 credentials.py
 credentials.pyc
@@ -84,3 +84,6 @@ target/
 
 # Emacs
 *.dir-locals.el
+
+# Other
+Scripts/

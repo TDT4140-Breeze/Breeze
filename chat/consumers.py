@@ -3,7 +3,7 @@ import json
 import logging
 from channels import Group
 from channels.sessions import channel_session
-from .models import Room
+from .models import Room, User
 
 log = logging.getLogger(__name__)
 
@@ -15,19 +15,16 @@ def ws_connect(message):
     # of websocket). So, this is effectively a version of _get_object_or_404.
     try:
         prefix, label = message['path'].decode('ascii').strip('/').split('/')
-        if prefix != 'chat':
-            log.debug('invalid ws path=%s', message['path'])
-            return
+        #if prefix != 'chat':
+        #    log.debug('invalid ws path=%s', message['path'])
+        #    return
         room = Room.objects.get(label=label)
     except ValueError:
-        log.debug('invalid ws path=%s', message['path'])
+        #log.debug('invalid ws path=%s', message['path'])
         return
     except Room.DoesNotExist:
         log.debug('ws room does not exist label=%s', label)
         return
-
-    log.debug('chat connect room=%s client=%s:%s',
-        room.label, message['client'][0], message['client'][1])
 
     # Need to be explicit about the channel layer so that testability works
     # This may be a FIXME?

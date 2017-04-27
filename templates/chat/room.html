@@ -4,15 +4,27 @@
 {% load staticfiles %}
 <h1>{{ room.label }}</h1>
 <p class="quiet">
-    Anyone with this URL can join the room and chat:
-    <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code>
-</p>
+    Welcome to the chat room, <span id="user">{{ login.email }}</span>
 
-<p>
-    <label for="handle">Your name:</label>
-    <input id="handle" type="text" placeholder="handle">
+    <br/>
+    This room belongs to {{ room.lobby_id }} and has {{  room.lobby.connected_users  }} users connected
+    <br/>
+    The topic for this discussion is: {{ room.lobby.topic }}
+
 </p>
 <form id="chatform">
+    <div id="users">
+    <table>
+        <tbody><p>Connected users:</p>
+        {% for username in users %}
+        <tr>
+            <td>{{ username }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+        </div>
+    <div id="chatboundary">
     <table id="chat">
         <tbody>
             {% for message in messages %}
@@ -23,24 +35,27 @@
             </tr>
             {% endfor %}
         </tbody>
-        <tfoot>
+        </table>
+        </div>
+    {% if room.lobby.active %}
+        <table>
             <tr>
                 <td>Say something:</td>
                 <td colspan=2>
                     <input id="message" type="text" placeholder="message">
                     <button type="submit" id="go">Say it</button>
                 </td>
-        </tfoot>
-    </table>
+        </table>
+    {% else %}
+    <p>The lobby is inactive.</p>
+    {% endif %}
+
+
 </form>
 
-<h4>TODO:</h4>
-<ul>
-    <li>Scrollable log</li>
-    <li>Prompt for name and email before entering chat room</li>
-    <li>Show connected users</li>
-    <li>Show discussion topic</li>
-</ul>
+<a href="{% url 'download' %}?{{ room.label }}" class="lobbyLink">Download chat logs of this conversation</a>
+<a href="{% url 'profile' %}" class="lobbyLink">Go to profile page</a>
+<a href="{% url 'post_chat' %}" class="post_chat">Leave chat</a>
 
 {% endblock content %}
 

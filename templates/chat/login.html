@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+<h1>Breeze</h1>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<!-- Login form -->
+
+    <h2 style="font-size: 25px">Login</h2>
+
+<form action="/login/" method="post">
+    <label for="user_email">Email: </label>
+    <input id="user_email" type="email" name="user_email" value="{{ current_name }}">
+    <p style="font-size: 20px">Create user? This will let you save your chat logs.</p>
+    <button type="button" class="accordion">Create user/Enter password</button>
+    <div class="accordion_form">
+    <label for="user_password">Password:</label>
+    <input id="user_password" type="password" name="user_password" value="">
+    <label for="password_retype">Please reenter password:</label>
+    <input id="password_retype" type="password" name="password_retype" value="">
+    </div>
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Login">
+</form>
+{% endblock content %}
+
+{% block afterbody %}
+    <script type="text/javascript" src='{% static "jquery-1.12.1.min.js" %}'></script>
+    <script type="text/javascript" src='{% static "accordion.js" %}'></script>
+{% endblock afterbody %}
+
